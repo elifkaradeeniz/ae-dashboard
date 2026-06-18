@@ -299,6 +299,40 @@
   }
   .source-info strong { color: var(--spirulina); }
 
+  /* ── FILTER BUTTONS ── */
+  .filter-btn {
+    background: var(--paper); border: 1px solid var(--paper2); border-radius: 2px;
+    color: var(--muted); font-size: 10px; font-weight: 600; padding: 4px 10px;
+    cursor: pointer; transition: all .12s;
+  }
+  .filter-btn:hover { background: var(--paper2); }
+  .filter-btn.active { background: var(--spirulina); color: var(--accent); border-color: var(--spirulina); }
+
+  /* ── CANDIDATE TABLE ── */
+  #candidates-table tbody tr {
+    border-bottom: 1px solid var(--paper2);
+    cursor: pointer;
+    transition: background .1s;
+  }
+  #candidates-table tbody tr:hover { background: #f7f1e8; }
+  #candidates-table td { padding: 7px 10px; font-size: 11px; color: var(--spirulina); vertical-align: middle; }
+  .cand-name-link { color: var(--green); font-weight: 600; text-decoration: none; }
+  .cand-name-link:hover { text-decoration: underline; }
+  .tier-pill {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 2px 7px; border-radius: 2px; white-space: nowrap;
+  }
+
+  /* ── CANDIDATE PANEL FIELDS ── */
+  .panel-section { margin-bottom: 16px; }
+  .panel-section-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; }
+  .panel-field { display: flex; gap: 8px; margin-bottom: 7px; font-size: 12px; }
+  .panel-field-label { min-width: 90px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding-top: 1px; }
+  .panel-field-value { color: var(--spirulina); line-height: 1.4; word-break: break-word; flex: 1; }
+  .panel-field-value a { color: var(--green); text-decoration: none; }
+  .panel-field-value a:hover { text-decoration: underline; }
+  .panel-notes { background: var(--paper); border-left: 3px solid var(--paper2); border-radius: 2px; padding: 8px 10px; font-size: 11px; color: var(--spirulina); line-height: 1.5; margin-top: 4px; white-space: pre-wrap; }
+
 </style>
 </head>
 <body>
@@ -545,14 +579,44 @@
     </div>
   </div>
 
-  <!-- SOURCE COMPANIES -->
-  <div class="card">
-    <div class="card-title">🏢 Top Source Companies</div>
-    <div id="company-breakdown">
-      <div class="tba">Loading…</div>
-    </div>
-  </div>
+  <!-- SOURCE COMPANIES removed -->
 
+</div>
+
+<!-- CANDIDATES TABLE -->
+<div style="padding: 0 20px; margin-bottom: 10px;">
+  <div class="card" style="border-top-color: var(--spirulina);">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+      <div class="card-title" style="margin-bottom:0">👥 All Candidates</div>
+      <div style="display:flex; gap:6px;" id="tier-filters">
+        <button class="filter-btn active" onclick="filterCandidates('all')">All</button>
+        <button class="filter-btn" onclick="filterCandidates('tier1')">Tier 1</button>
+        <button class="filter-btn" onclick="filterCandidates('tier2')">Tier 2</button>
+        <button class="filter-btn" onclick="filterCandidates('tier3')">Tier 3</button>
+        <button class="filter-btn" onclick="filterCandidates('interview')">Interview</button>
+        <button class="filter-btn" onclick="filterCandidates('out')">Out</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="candidates-table" style="width:100%; border-collapse:collapse; font-size:11px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--paper2); text-align:left;">
+            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Name</th>
+            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Company</th>
+            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Role</th>
+            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Tier</th>
+            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Stage</th>
+            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Reply</th>
+            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Interview</th>
+          </tr>
+        </thead>
+        <tbody id="candidates-tbody">
+          <tr><td colspan="7" style="padding:16px; text-align:center; color:var(--muted);">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="candidates-count" style="font-size:10px; color:var(--muted); margin-top:10px;"></div>
+  </div>
 </div>
 
 <!-- FOOTER -->
@@ -562,6 +626,19 @@
 </div>
 
 </div><!-- /wrapper -->
+
+<!-- CANDIDATE DETAIL PANEL -->
+<div id="candidate-overlay" style="display:none; position:fixed; inset:0; background:rgba(18,51,31,.4); z-index:500; backdrop-filter:blur(2px);" onclick="closePanel(event)"></div>
+<div id="candidate-panel" style="display:none; position:fixed; top:0; right:0; width:420px; max-width:96vw; height:100vh; background:var(--paper); z-index:501; overflow-y:auto; box-shadow:-4px 0 24px rgba(0,0,0,.15); transform:translateX(100%); transition:transform .25s ease;">
+  <div style="background:var(--spirulina); padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+    <div>
+      <div id="panel-name" style="font-size:15px; font-weight:700; color:#fff;"></div>
+      <div id="panel-tier" style="font-size:10px; margin-top:3px;"></div>
+    </div>
+    <button onclick="closePanelBtn()" style="background:rgba(255,255,255,.1); border:none; color:#fff; border-radius:2px; padding:6px 10px; cursor:pointer; font-size:12px;">✕ Close</button>
+  </div>
+  <div style="padding:18px 20px;" id="panel-body"></div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════════════
@@ -815,12 +892,11 @@ function computeMetrics(pages) {
 
   // ── INTERVIEW CANDIDATE NAMES ─────────────────────────
   const interviewNames = interviewPages.map(p => {
-    // Try multiple name field variants
     const first = getText(p, 'Name') || getText(p, 'First Name');
     const last  = getText(p, 'Last Name') || getText(p, 'Surname');
     const phase = getText(p, 'Interview');
     const name = [first, last].filter(Boolean).join(' ') || '(unnamed)';
-    return phase ? `${name} — ${phase}` : name;
+    return { name, phase, pageId: p.id };
   });
 
   const replyRate = outreachCount > 0 ? Math.round((repliedCount / outreachCount) * 100) : 0;
@@ -909,8 +985,11 @@ function renderMetrics(m) {
   set('int-advanced', fmt(m.advancedCount));
   const intListEl = document.getElementById('interview-list');
   if (m.interviewNames.length) {
-    intListEl.innerHTML = m.interviewNames.map(n =>
-      `<div class="interview-highlight">${n}</div>`
+    intListEl.innerHTML = m.interviewNames.map(({ name, phase, pageId }) =>
+      `<div class="interview-highlight" style="display:flex;justify-content:space-between;align-items:center;">
+        <a class="cand-name-link" href="#" onclick="openCandidate('${pageId}');return false;">${name}</a>
+        ${phase ? `<span style="font-size:10px;color:var(--muted);margin-left:8px;">${phase}</span>` : ''}
+      </div>`
     ).join('');
   } else {
     intListEl.innerHTML = '<div class="tba">No interviews yet</div>';
@@ -926,19 +1005,6 @@ function renderMetrics(m) {
   // Charts
   renderTierChart(m);
   renderSourceChart(m);
-
-  // Source companies
-  const compEl = document.getElementById('company-breakdown');
-  const topCompanies = Object.entries(m.companyCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8);
-  if (topCompanies.length) {
-    compEl.innerHTML = topCompanies
-      .map(([k, v]) => `<div class="breakdown-row"><span class="breakdown-key">${k}</span><span class="breakdown-val">${v}</span></div>`)
-      .join('');
-  } else {
-    compEl.innerHTML = '<div class="tba">No company data</div>';
-  }
 
   // Last updated
   const now = new Date();
@@ -1064,40 +1130,11 @@ async function loadData() {
 
   try {
     const pages = await fetchAllPages();
-
-    // ── TEMP DEBUG: show all property names + sample values from first record ──
-    if (pages.length > 0) {
-      const p = pages[0];
-      const propSummary = Object.entries(p.properties).map(([name, prop]) => {
-        let sample = '';
-        if (prop.type === 'select') sample = prop.select?.name || '(empty)';
-        else if (prop.type === 'multi_select') sample = prop.multi_select.map(s=>s.name).join(', ') || '(empty)';
-        else if (prop.type === 'checkbox') sample = String(prop.checkbox);
-        else if (prop.type === 'title') sample = prop.title.map(t=>t.plain_text).join('') || '(empty)';
-        else if (prop.type === 'rich_text') sample = prop.rich_text.map(t=>t.plain_text).join('') || '(empty)';
-        else if (prop.type === 'date') sample = prop.date?.start || '(empty)';
-        else if (prop.type === 'phone_number') sample = prop.phone_number || '(empty)';
-        else if (prop.type === 'email') sample = prop.email || '(empty)';
-        else if (prop.type === 'url') sample = prop.url || '(empty)';
-        else sample = `(type: ${prop.type})`;
-        return `${name} [${prop.type}]: ${sample}`;
-      }).join('\n');
-      console.log('=== NOTION PROPERTIES (first record) ===\n' + propSummary);
-      // Show in a small fixed debug panel
-      let dbg = document.getElementById('debug-panel');
-      if (!dbg) {
-        dbg = document.createElement('div');
-        dbg.id = 'debug-panel';
-        dbg.style = 'position:fixed;bottom:10px;right:10px;background:#12331F;color:#6FED6D;font-size:10px;font-family:monospace;padding:12px;border-radius:4px;max-width:380px;max-height:300px;overflow:auto;z-index:9999;white-space:pre;';
-        document.body.appendChild(dbg);
-      }
-      dbg.textContent = '📋 PROPERTY NAMES (first record):\n\n' + propSummary + '\n\n[click to dismiss]';
-      dbg.onclick = () => dbg.remove();
-    }
-    // ── END DEBUG ──
+    window.allPages = pages;
 
     const metrics = computeMetrics(pages);
     renderMetrics(metrics);
+    renderCandidatesTable(pages);
   } catch (err) {
     alert('Error loading data: ' + err.message + '\n\nCheck your token and worker URL.');
     doLogout();
@@ -1116,6 +1153,193 @@ function set(id, html) {
 function setWidth(id, pct) {
   const el = document.getElementById(id);
   if (el) el.style.width = Math.min(pct, 100) + '%';
+}
+
+// ═══════════════════════════════════════════════════════
+//  TIER HELPERS
+// ═══════════════════════════════════════════════════════
+function tierPill(tier) {
+  if (!tier) return '<span style="color:var(--muted);font-size:10px;">—</span>';
+  const t = tier.toLowerCase();
+  let bg, color;
+  if (t.includes('tier 1'))      { bg = '#E26A9E'; color = '#fff'; }
+  else if (t.includes('tier 2')) { bg = '#00712D'; color = '#fff'; }
+  else if (t.includes('tier 3')) { bg = '#2A4A35'; color = '#6FED6D'; }
+  else if (t === 'out')          { bg = '#F0E8DA'; color = '#2A4A35'; }
+  else                           { bg = '#F0E8DA'; color = '#2A4A35'; }
+  const label = t.includes('tier 1') ? 'T1' : t.includes('tier 2') ? 'T2' : t.includes('tier 3') ? 'T3' : tier;
+  return `<span class="tier-pill" style="background:${bg};color:${color};">${label}</span>`;
+}
+
+function getCandName(page) {
+  const first = getText(page, 'Name') || getText(page, 'First Name');
+  const last  = getText(page, 'Last Name') || getText(page, 'Surname');
+  return [first, last].filter(Boolean).join(' ') || '(unnamed)';
+}
+
+// ═══════════════════════════════════════════════════════
+//  CANDIDATES TABLE
+// ═══════════════════════════════════════════════════════
+let currentFilter = 'all';
+
+function renderCandidatesTable(pages) {
+  const tbody = document.getElementById('candidates-tbody');
+  if (!tbody) return;
+  if (!pages || pages.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:var(--muted);">No candidates found.</td></tr>';
+    return;
+  }
+
+  let filtered = pages;
+  if (currentFilter === 'tier1')     filtered = pages.filter(p => getText(p,'Tier').toLowerCase().includes('tier 1'));
+  else if (currentFilter === 'tier2') filtered = pages.filter(p => getText(p,'Tier').toLowerCase().includes('tier 2'));
+  else if (currentFilter === 'tier3') filtered = pages.filter(p => getText(p,'Tier').toLowerCase().includes('tier 3'));
+  else if (currentFilter === 'interview') filtered = pages.filter(p => getText(p,'Interview').trim().length > 0);
+  else if (currentFilter === 'out')   filtered = pages.filter(p => getText(p,'Tier').toLowerCase() === 'out');
+
+  document.getElementById('candidates-count').textContent = `${filtered.length} of ${pages.length} candidates shown`;
+
+  tbody.innerHTML = filtered.map(page => {
+    const name    = getCandName(page);
+    const company = getText(page, 'Source Company');
+    const role    = getText(page, 'Current Role');
+    const tier    = getText(page, 'Tier');
+    const stage   = getText(page, 'Stage');
+    const reply   = getText(page, 'Reply');
+    const iv      = getText(page, 'Interview');
+    const pid     = page.id;
+
+    return `<tr onclick="openCandidate('${pid}')">
+      <td><a class="cand-name-link" href="#" onclick="openCandidate('${pid}');return false;">${name}</a></td>
+      <td style="color:var(--muted);">${company || '—'}</td>
+      <td style="color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${role || '—'}</td>
+      <td>${tierPill(tier)}</td>
+      <td style="color:var(--muted);">${stage || '—'}</td>
+      <td style="color:var(--muted);">${reply || '—'}</td>
+      <td>${iv ? `<span style="color:var(--green);font-size:10px;font-weight:600;">${iv}</span>` : '<span style="color:var(--paper2);">—</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterCandidates(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderCandidatesTable(window.allPages || []);
+}
+
+// ═══════════════════════════════════════════════════════
+//  CANDIDATE DETAIL PANEL
+// ═══════════════════════════════════════════════════════
+function openCandidate(pageId) {
+  const page = (window.allPages || []).find(p => p.id === pageId);
+  if (!page) return;
+
+  const first   = getText(page, 'Name') || getText(page, 'First Name');
+  const last    = getText(page, 'Last Name') || getText(page, 'Surname');
+  const name    = [first, last].filter(Boolean).join(' ') || '(unnamed)';
+  const tier    = getText(page, 'Tier');
+  const company = getText(page, 'Source Company');
+  const role    = getText(page, 'Current Role');
+  const stage   = getText(page, 'Stage');
+  const reply   = getText(page, 'Reply');
+  const iv      = getText(page, 'Interview');
+  const linkedin= getText(page, 'LinkedIn URL');
+  const callDate= getPropValue(page, 'Call?');
+  const email   = getText(page, '(Lusha) Work email');
+  const phone1  = getText(page, '(Lusha) Phone number 1');
+  const phone2  = getText(page, '(Lusha) Phone number 2');
+  const notes   = getText(page, 'Notes');
+  const ivNotes = getText(page, 'Interview Notes');
+
+  // Notion page URL (strip dashes from UUID)
+  const notionId = pageId.replace(/-/g, '');
+  const notionUrl = `https://notion.so/${notionId}`;
+
+  // Header
+  document.getElementById('panel-name').textContent = name;
+  document.getElementById('panel-tier').innerHTML = tier ? tierPill(tier) + ` <span style="color:rgba(255,255,255,.55);margin-left:6px;font-size:10px;">${tier}</span>` : '';
+
+  // Build body
+  function field(label, value) {
+    if (!value || (typeof value === 'string' && !value.trim())) return '';
+    return `<div class="panel-field">
+      <div class="panel-field-label">${label}</div>
+      <div class="panel-field-value">${value}</div>
+    </div>`;
+  }
+  function link(label, url, text) {
+    if (!url || !url.trim()) return '';
+    return field(label, `<a href="${url}" target="_blank" rel="noopener">${text || url}</a>`);
+  }
+
+  let html = '';
+
+  // Contact info
+  html += `<div class="panel-section">
+    <div class="panel-section-title">👤 Candidate Info</div>
+    ${field('Company', company)}
+    ${field('Role', role)}
+    ${field('Stage', stage)}
+    ${field('Reply', reply)}
+    ${field('Interview', iv)}
+    ${field('Call Date', callDate)}
+    ${link('LinkedIn', linkedin, '↗ View LinkedIn')}
+    ${link('Notion Page', notionUrl, '↗ Open in Notion')}
+  </div>`;
+
+  // Contact details
+  if (email || phone1 || phone2) {
+    html += `<div class="panel-section">
+      <div class="panel-section-title">📬 Contact Details</div>
+      ${email  ? field('Email', `<a href="mailto:${email}">${email}</a>`) : ''}
+      ${phone1 ? field('Phone 1', phone1) : ''}
+      ${phone2 ? field('Phone 2', phone2) : ''}
+    </div>`;
+  }
+
+  // Notes
+  if (notes && notes.trim()) {
+    html += `<div class="panel-section">
+      <div class="panel-section-title">📝 Notes</div>
+      <div class="panel-notes">${notes}</div>
+    </div>`;
+  }
+
+  // Interview notes
+  if (ivNotes && ivNotes.trim()) {
+    html += `<div class="panel-section">
+      <div class="panel-section-title">🎙️ Interview Notes</div>
+      <div class="panel-notes">${ivNotes}</div>
+    </div>`;
+  }
+
+  // Quick links at bottom
+  html += `<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+    ${linkedin ? `<a href="${linkedin}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;background:var(--spirulina);color:var(--accent);font-size:11px;font-weight:700;padding:8px 14px;border-radius:2px;text-decoration:none;">↗ LinkedIn</a>` : ''}
+    <a href="${notionUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;background:var(--paper2);color:var(--spirulina);font-size:11px;font-weight:700;padding:8px 14px;border-radius:2px;text-decoration:none;">📋 Notion</a>
+  </div>`;
+
+  document.getElementById('panel-body').innerHTML = html;
+
+  // Show panel
+  document.getElementById('candidate-overlay').style.display = 'block';
+  const panel = document.getElementById('candidate-panel');
+  panel.style.display = 'block';
+  requestAnimationFrame(() => { panel.style.transform = 'translateX(0)'; });
+}
+
+function closePanelBtn() {
+  const panel = document.getElementById('candidate-panel');
+  panel.style.transform = 'translateX(100%)';
+  setTimeout(() => {
+    panel.style.display = 'none';
+    document.getElementById('candidate-overlay').style.display = 'none';
+  }, 260);
+}
+
+function closePanel(e) {
+  if (e.target === document.getElementById('candidate-overlay')) closePanelBtn();
 }
 </script>
 </body>
