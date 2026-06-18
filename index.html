@@ -1074,6 +1074,38 @@ async function loadData() {
 
   try {
     const pages = await fetchAllPages();
+
+    // ── TEMP DEBUG: show all property names + sample values from first record ──
+    if (pages.length > 0) {
+      const p = pages[0];
+      const propSummary = Object.entries(p.properties).map(([name, prop]) => {
+        let sample = '';
+        if (prop.type === 'select') sample = prop.select?.name || '(empty)';
+        else if (prop.type === 'multi_select') sample = prop.multi_select.map(s=>s.name).join(', ') || '(empty)';
+        else if (prop.type === 'checkbox') sample = String(prop.checkbox);
+        else if (prop.type === 'title') sample = prop.title.map(t=>t.plain_text).join('') || '(empty)';
+        else if (prop.type === 'rich_text') sample = prop.rich_text.map(t=>t.plain_text).join('') || '(empty)';
+        else if (prop.type === 'date') sample = prop.date?.start || '(empty)';
+        else if (prop.type === 'phone_number') sample = prop.phone_number || '(empty)';
+        else if (prop.type === 'email') sample = prop.email || '(empty)';
+        else if (prop.type === 'url') sample = prop.url || '(empty)';
+        else sample = `(type: ${prop.type})`;
+        return `${name} [${prop.type}]: ${sample}`;
+      }).join('\n');
+      console.log('=== NOTION PROPERTIES (first record) ===\n' + propSummary);
+      // Show in a small fixed debug panel
+      let dbg = document.getElementById('debug-panel');
+      if (!dbg) {
+        dbg = document.createElement('div');
+        dbg.id = 'debug-panel';
+        dbg.style = 'position:fixed;bottom:10px;right:10px;background:#12331F;color:#6FED6D;font-size:10px;font-family:monospace;padding:12px;border-radius:4px;max-width:380px;max-height:300px;overflow:auto;z-index:9999;white-space:pre;';
+        document.body.appendChild(dbg);
+      }
+      dbg.textContent = '📋 PROPERTY NAMES (first record):\n\n' + propSummary + '\n\n[click to dismiss]';
+      dbg.onclick = () => dbg.remove();
+    }
+    // ── END DEBUG ──
+
     const metrics = computeMetrics(pages);
     renderMetrics(metrics);
   } catch (err) {
