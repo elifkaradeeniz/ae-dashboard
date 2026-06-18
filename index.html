@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aybee — AE Hiring OS · Week 2</title>
+<title>Aybee — AE Hiring OS</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" crossorigin="anonymous"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
@@ -31,6 +31,72 @@
     padding-bottom: 48px;
   }
 
+  /* ── LOGIN OVERLAY ── */
+  #login-overlay {
+    position: fixed; inset: 0;
+    background: rgba(18, 51, 31, 0.92);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+  #login-overlay.hidden { display: none; }
+  .login-box {
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 36px 40px;
+    width: 420px;
+    max-width: 92vw;
+  }
+  .login-logo { margin-bottom: 20px; }
+  .login-title { font-size: 17px; font-weight: 700; color: var(--spirulina); margin-bottom: 6px; }
+  .login-sub { font-size: 12px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+  .login-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 5px; display: block; }
+  .login-input {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--paper2); border-radius: 3px;
+    background: var(--white); color: var(--spirulina);
+    font-size: 12px; font-family: monospace;
+    outline: none; margin-bottom: 16px;
+  }
+  .login-input:focus { border-color: var(--green); }
+  .login-btn {
+    width: 100%; padding: 11px;
+    background: var(--green); color: var(--white);
+    border: none; border-radius: 3px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    letter-spacing: .02em;
+  }
+  .login-btn:hover { background: #005a23; }
+  .login-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .login-error { font-size: 11px; color: var(--bubble); margin-top: 10px; }
+
+  /* ── LOADING OVERLAY ── */
+  #loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(18, 51, 31, 0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999;
+    backdrop-filter: blur(2px);
+  }
+  #loading-overlay.hidden { display: none; }
+  .loading-box {
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 28px 36px;
+    text-align: center;
+  }
+  .loading-spinner {
+    width: 28px; height: 28px;
+    border: 3px solid var(--paper2);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto 14px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 13px; color: var(--muted); }
+  .loading-count { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
   /* ── HEADER ── */
   .header {
     background: var(--spirulina);
@@ -44,12 +110,32 @@
   .header-divider { width: 1px; height: 26px; background: rgba(255,255,255,.15); }
   .header-title { font-size: 13px; font-weight: 700; color: #fff; }
   .header-sub { font-size: 10px; color: var(--accent); letter-spacing: .04em; margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
   .week-badge {
     background: var(--accent); color: var(--black);
     border-radius: 2px; padding: 3px 11px;
     font-size: 11px; font-weight: 700;
   }
-  .updated { font-size: 10px; color: rgba(255,255,255,.4); margin-left: 8px; }
+  .updated { font-size: 10px; color: rgba(255,255,255,.4); }
+  .refresh-btn {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: rgba(255,255,255,.7);
+    border-radius: 2px;
+    padding: 4px 10px;
+    font-size: 11px; font-weight: 600;
+    cursor: pointer; letter-spacing: .03em;
+    transition: background .15s;
+  }
+  .refresh-btn:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .logout-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,.35);
+    font-size: 10px; cursor: pointer;
+    padding: 4px 6px;
+  }
+  .logout-btn:hover { color: rgba(255,255,255,.7); }
 
   /* ── KPI STRIP ── */
   .kpi-strip {
@@ -148,6 +234,7 @@
     padding: 7px 10px;
     font-size: 12px;
     color: var(--spirulina);
+    margin-bottom: 5px;
   }
 
   /* ── FUNNEL ── */
@@ -216,10 +303,44 @@
 </head>
 <body>
 
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg width="80" height="25" viewBox="0 0 152 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#lc2)">
+          <path d="M21.93 2.2H15.89L.5 36.29H7.32L9.85 30.4H27.97L30.5 36.29H37.32L21.93 2.2ZM12.24 24.9L18.86 9.46H18.96L25.58 24.9H12.23Z" fill="#12331F"/>
+          <path d="M45.8 28.21H45.7L37.32 10.48H30.6L42.48 34.59L36.15 47.26H42.87L60.89 10.48H54.12L45.8 28.21Z" fill="#12331F"/>
+          <path d="M77.85 9.75C74.2 9.75 71.03 10.92 68.94 12.92H68.84V.74H62.8V36.3H68.5V33.57H68.6C70.6 35.76 73.76 37.03 77.61 37.03C85.74 37.03 91.54 31.38 91.54 23.39C91.54 15.4 85.7 9.75 77.85 9.75ZM77.02 31.72C72.49 31.72 68.84 28.7 68.84 25.05V21.64C68.84 17.99 72.59 15.06 77.07 15.06C82.13 15.06 85.5 18.37 85.5 23.39C85.5 28.41 82.14 31.72 77.03 31.72Z" fill="#12331F"/>
+          <path d="M121.17 22.53C120.6 14.71 114.67 9.18 106.42 9.79C98.41 10.38 92.99 16.49 93.58 24.5C94.18 32.66 100.06 37.6 108.75 36.97C114.04 36.58 118.03 34.34 120.71 30.28L116.42 26.98C114.26 30.12 111.78 31.71 108.34 31.97C103.63 32.32 100.18 29.93 99.69 25.91L121.31 24.33L121.17 22.53ZM99.46 21.53C99.58 17.86 102.55 15.1 106.88 14.78C111.11 14.47 114.45 16.77 115.06 20.38L99.46 21.53Z" fill="#12331F"/>
+          <path d="M146.62 25.05C145.14 28.56 143.05 30.63 139.73 31.59C135.19 32.89 131.33 31.26 130.03 27.43L150.87 21.46L150.37 19.73C148.21 12.19 141.28 8 133.32 10.28C125.6 12.5 121.55 19.58 123.76 27.31C126.02 35.18 132.78 38.81 141.16 36.41C146.26 34.95 149.71 31.93 151.5 27.42L146.62 25.05ZM134.79 15.06C138.86 13.89 142.6 15.45 143.94 18.87L128.91 23.18C128.28 19.56 130.62 16.25 134.79 15.06Z" fill="#12331F"/>
+        </g>
+        <defs><clipPath id="lc2"><rect width="152" height="48" fill="white"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="login-title">AE Hiring OS</div>
+    <div class="login-sub">Enter your Notion integration token to load live data from the AE Candidates database.</div>
+    <label class="login-label" for="token-input">Notion Integration Token</label>
+    <input id="token-input" class="login-input" type="password" placeholder="secret_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+    <label class="login-label" for="worker-input">Proxy Worker URL</label>
+    <input id="worker-input" class="login-input" type="text" placeholder="https://notion-proxy.YOURNAME.workers.dev" />
+    <button id="login-btn" class="login-btn" onclick="handleLogin()">Load Dashboard →</button>
+    <div id="login-error" class="login-error" style="display:none"></div>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay" class="hidden">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading candidates from Notion…</div>
+    <div class="loading-count" id="loading-count"></div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <div class="header">
   <div class="header-left">
-    <!-- Aybee Logo (white) -->
     <svg width="88" height="28" viewBox="0 0 152 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#lc)">
         <path d="M21.93 2.2H15.89L.5 36.29H7.32L9.85 30.4H27.97L30.5 36.29H37.32L21.93 2.2ZM12.24 24.9L18.86 9.46H18.96L25.58 24.9H12.23Z" fill="white"/>
@@ -236,36 +357,37 @@
       <div class="header-sub">Account Executive · Munich / DACH</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center">
-    <span class="week-badge">Week 2</span>
-    <span class="updated">Updated June 10, 2025</span>
+  <div class="header-right">
+    <span class="updated" id="last-updated"></span>
+    <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+    <button class="logout-btn" onclick="doLogout()" title="Change token">✕ Logout</button>
   </div>
 </div>
 
 <!-- KPI STRIP -->
 <div class="kpi-strip">
   <div class="kpi-cell">
-    <div class="kpi-num">1,368</div>
-    <div class="kpi-lbl">Surfaced</div>
+    <div class="kpi-num" id="kpi-shortlisted">—</div>
+    <div class="kpi-lbl">In Pipeline</div>
   </div>
   <div class="kpi-cell">
-    <div class="kpi-num">258</div>
-    <div class="kpi-lbl">Shortlisted</div>
-  </div>
-  <div class="kpi-cell">
-    <div class="kpi-num">34</div>
+    <div class="kpi-num" id="kpi-outreach">—</div>
     <div class="kpi-lbl">Outreach Sent</div>
   </div>
   <div class="kpi-cell">
-    <div class="kpi-num">9</div>
+    <div class="kpi-num" id="kpi-connections">—</div>
+    <div class="kpi-lbl">Called</div>
+  </div>
+  <div class="kpi-cell">
+    <div class="kpi-num" id="kpi-replied">—</div>
     <div class="kpi-lbl">Replied</div>
   </div>
   <div class="kpi-cell">
-    <div class="kpi-num">1</div>
+    <div class="kpi-num" id="kpi-interviews">—</div>
     <div class="kpi-lbl">Interviews</div>
   </div>
   <div class="kpi-cell highlight">
-    <div class="kpi-num">26%</div>
+    <div class="kpi-num" id="kpi-replyrate">—</div>
     <div class="kpi-lbl">Reply Rate</div>
   </div>
 </div>
@@ -274,97 +396,89 @@
 <div class="wrapper">
 <div class="grid3">
 
-  <!-- SOURCING -->
-  <div class="card">
-    <div class="card-title">🔍 Sourcing</div>
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">Total surfaced (Sales Nav)</span>
-        <span class="bar-value" style="color:var(--spirulina)">1,368</span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--spirulina)"></div></div>
-    </div>
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">Reviewed in detail</span>
-        <span class="bar-value" style="color:var(--green)">429 <span class="bar-sub">31%</span></span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:31%;background:var(--green)"></div></div>
-    </div>
-    <div class="divider"></div>
-    <div class="sec-lbl">Search Breakdown</div>
-    <div class="breakdown-row"><span class="breakdown-key">SaaS</span><span class="breakdown-val">650</span></div>
-    <div class="breakdown-row"><span class="breakdown-key">Commerce</span><span class="breakdown-val">409</span></div>
-    <div class="breakdown-row"><span class="breakdown-key">Marktforschung</span><span class="breakdown-val">160</span></div>
-    <div class="breakdown-row"><span class="breakdown-key">Full Cycle</span><span class="breakdown-val">99</span></div>
-    <div class="breakdown-row"><span class="breakdown-key">Past Companies</span><span class="breakdown-val">32</span></div>
-    <div class="breakdown-row"><span class="breakdown-key">Voice of Customer</span><span class="breakdown-val">18</span></div>
-  </div>
-
-  <!-- HEADHUNTERS -->
-  <div class="card accent-bubble">
-    <div class="card-title">🤝 Headhunters</div>
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">Firms contacted</span>
-        <span class="bar-value" style="color:var(--bubble)">4</span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--bubble)"></div></div>
-    </div>
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">Lists received</span>
-        <span class="bar-value" style="color:var(--bubble)">2 <span class="bar-sub">50%</span></span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--bubble)"></div></div>
-    </div>
-    <div class="divider"></div>
-    <div class="tba">Candidates received — to fill in</div>
-    <div class="tba">Relevant from headhunters — to fill in</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:6px">2 more firms identified · follow-up Mon</div>
-  </div>
-
   <!-- SHORTLIST -->
   <div class="card">
-    <div class="card-title">⭐ Shortlist</div>
+    <div class="card-title">⭐ Shortlist Breakdown</div>
     <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
       <div>
-        <div class="big-num">258</div>
-        <div class="big-sub">In Pipeline</div>
+        <div class="big-num" id="sl-total">—</div>
+        <div class="big-sub">Total in DB</div>
       </div>
       <div style="padding-top:8px">
-        <div style="font-size:11px;color:var(--muted)">of 302 reviewed</div>
-        <div style="font-size:11px;color:var(--bubble)">44 filtered out</div>
+        <div style="font-size:11px;color:var(--muted)" id="sl-tiered">— with tier</div>
+        <div style="font-size:11px;color:var(--bubble)" id="sl-out">— filtered out</div>
       </div>
     </div>
     <div class="bar-row">
       <div class="bar-meta">
         <span class="bar-label">Tier 1 — Dream</span>
-        <span class="bar-value" style="color:var(--bubble)">41 <span class="bar-sub">16%</span></span>
+        <span class="bar-value" style="color:var(--bubble)" id="sl-t1">—</span>
       </div>
-      <div class="bar-track"><div class="bar-fill" style="width:16%;background:var(--bubble)"></div></div>
+      <div class="bar-track"><div class="bar-fill" id="sl-t1-bar" style="width:0%;background:var(--bubble)"></div></div>
     </div>
     <div class="bar-row">
       <div class="bar-meta">
         <span class="bar-label">Tier 2 — Strong Adjacent</span>
-        <span class="bar-value" style="color:var(--green)">136 <span class="bar-sub">53%</span></span>
+        <span class="bar-value" style="color:var(--green)" id="sl-t2">—</span>
       </div>
-      <div class="bar-track"><div class="bar-fill" style="width:53%;background:var(--green)"></div></div>
+      <div class="bar-track"><div class="bar-fill" id="sl-t2-bar" style="width:0%;background:var(--green)"></div></div>
     </div>
     <div class="bar-row">
       <div class="bar-meta">
         <span class="bar-label">Tier 3 — High Potential</span>
-        <span class="bar-value" style="color:var(--accent);filter:brightness(.7)">81 <span class="bar-sub">31%</span></span>
+        <span class="bar-value" style="color:var(--accent);filter:brightness(.7)" id="sl-t3">—</span>
       </div>
-      <div class="bar-track"><div class="bar-fill" style="width:31%;background:var(--accent)"></div></div>
+      <div class="bar-track"><div class="bar-fill" id="sl-t3-bar" style="width:0%;background:var(--accent)"></div></div>
+    </div>
+  </div>
+
+  <!-- OUTREACH -->
+  <div class="card accent-accent">
+    <div class="card-title">📤 Outreach Coverage</div>
+    <div class="sec-lbl">Activity</div>
+    <div class="bar-row">
+      <div class="bar-meta">
+        <span class="bar-label">Called (Call? date set)</span>
+        <span class="bar-value" style="color:var(--green)" id="out-accepted">—</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="out-accepted-bar" style="width:0%;background:var(--green)"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-meta">
+        <span class="bar-label">Connection accepted</span>
+        <span class="bar-value" style="color:var(--green)" id="out-seen">—</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="out-seen-bar" style="width:0%;background:var(--green)"></div></div>
     </div>
     <div class="divider"></div>
-    <div class="sec-lbl">Out Reasons</div>
-    <div class="pills">
-      <span class="pill">Marked Out <strong>21</strong></span>
-      <span class="pill">Too Senior <strong>9</strong></span>
-      <span class="pill">Committed Elsewhere <strong>9</strong></span>
-      <span class="pill">Just Switched <strong>5</strong></span>
+    <div class="sec-lbl">Contact Info via Lusha</div>
+    <div class="bar-row">
+      <div class="bar-meta">
+        <span class="bar-label">With work email</span>
+        <span class="bar-value" style="color:var(--accent);filter:brightness(.75)" id="out-email">—</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="out-email-bar" style="width:0%;background:var(--accent)"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-meta">
+        <span class="bar-label">With phone number</span>
+        <span class="bar-value" style="color:var(--green)" id="out-phone">—</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="out-phone-bar" style="width:0%;background:var(--green)"></div></div>
+    </div>
+  </div>
+
+  <!-- RESPONSES -->
+  <div class="card accent-bubble">
+    <div class="card-title">💬 Responses</div>
+    <div class="sec-lbl">By Reply Status</div>
+    <div id="reply-breakdown">
+      <div class="tba">Loading…</div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-lbl">Calls</div>
+    <div id="call-breakdown">
+      <div class="tba">Loading…</div>
     </div>
   </div>
 
@@ -373,108 +487,43 @@
 <!-- ROW 2 -->
 <div class="grid3">
 
-  <!-- OUTREACH -->
-  <div class="card accent-accent">
-    <div class="card-title">📤 Outreach</div>
-    <div class="sec-lbl">LinkedIn</div>
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">Connection requests sent</span>
-        <span class="bar-value" style="color:var(--green)">302</span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--green)"></div></div>
-    </div>
-    <div class="tba">Accepted — to fill in</div>
-    <div class="tba">Message seen — to fill in</div>
-    <div class="divider"></div>
-    <div class="sec-lbl">Email</div>
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">Sent manually</span>
-        <span class="bar-value" style="color:var(--green)">13</span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--green)"></div></div>
-    </div>
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">With email via Lusha</span>
-        <span class="bar-value" style="color:var(--accent);filter:brightness(.75)">242 <span class="bar-sub">94%</span></span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:94%;background:var(--accent)"></div></div>
-    </div>
-    <div class="divider"></div>
-    <div class="sec-lbl">Phone</div>
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">With phone via Lusha</span>
-        <span class="bar-value" style="color:var(--green)">184 <span class="bar-sub">71%</span></span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:71%;background:var(--green)"></div></div>
+  <!-- PIPELINE STAGES -->
+  <div class="card">
+    <div class="card-title">📊 Pipeline Stages</div>
+    <div id="stage-breakdown">
+      <div class="tba">Loading…</div>
     </div>
   </div>
 
-  <!-- RESPONSES -->
-  <div class="card accent-bubble">
-    <div class="card-title">💬 Responses</div>
-    <div class="sec-lbl">LinkedIn Replies</div>
-    <div class="tba">Positive — to fill in</div>
-    <div class="tba">Negative — to fill in</div>
-    <div class="tba">No reply — to fill in</div>
-    <div class="divider"></div>
-    <div class="sec-lbl">Email Replies</div>
-    <div class="tba">Positive — to fill in</div>
-    <div class="tba">Negative — to fill in</div>
-    <div class="tba">No reply — to fill in</div>
-    <div class="divider"></div>
-    <div class="sec-lbl">Calls</div>
-    <div class="tba">Didn't answer — to fill in</div>
-    <div class="tba">Interested — to fill in</div>
-    <div class="tba">Not interested — to fill in</div>
+  <!-- INTERVIEWS -->
+  <div class="card accent-spirulina">
+    <div class="card-title">🗓 Interviews</div>
+    <div class="metric-trio">
+      <div class="metric-item">
+        <div class="m-num" style="color:var(--spirulina)" id="int-scheduled">—</div>
+        <div class="m-lbl">Scheduled</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-num" style="color:var(--muted)" id="int-completed">—</div>
+        <div class="m-lbl">Completed</div>
+      </div>
+      <div class="metric-item">
+        <div class="m-num" style="color:var(--green)" id="int-advanced">—</div>
+        <div class="m-lbl">Advanced</div>
+      </div>
+    </div>
+    <div id="interview-list">
+      <div class="tba">Loading…</div>
+    </div>
   </div>
 
-  <!-- INTERVIEWS + PIPELINE -->
-  <div class="stack">
-    <div class="card accent-spirulina">
-      <div class="card-title">🗓 Interviews</div>
-      <div class="metric-trio">
-        <div class="metric-item">
-          <div class="m-num" style="color:var(--spirulina)">1</div>
-          <div class="m-lbl">Scheduled</div>
-        </div>
-        <div class="metric-item">
-          <div class="m-num" style="color:var(--muted)">0</div>
-          <div class="m-lbl">Completed</div>
-        </div>
-        <div class="metric-item">
-          <div class="m-num" style="color:var(--green)">0</div>
-          <div class="m-lbl">Advanced</div>
-        </div>
-      </div>
-      <div class="interview-highlight"><strong>Maurice Brunnecker</strong> — Scheduled · JD sent ✓</div>
+  <!-- SOURCE CHANNELS -->
+  <div class="card">
+    <div class="card-title">📡 Source Channels</div>
+    <div class="chart-wrap-sm">
+      <canvas id="sourceChart"></canvas>
     </div>
-    <div class="card">
-      <div class="card-title">📊 Pipeline Stages</div>
-      <div class="bar-row">
-        <div class="bar-meta"><span class="bar-label">Identified</span><span class="bar-value" style="color:var(--muted)">222 <span class="bar-sub">86%</span></span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:86%;background:var(--muted)"></div></div>
-      </div>
-      <div class="bar-row">
-        <div class="bar-meta"><span class="bar-label">Not Started</span><span class="bar-value" style="color:var(--paper2);filter:brightness(.7)">9 <span class="bar-sub">3%</span></span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:3%;background:var(--paper2);border:1px solid var(--paper2)"></div></div>
-      </div>
-      <div class="bar-row">
-        <div class="bar-meta"><span class="bar-label">In Outreach</span><span class="bar-value" style="color:var(--green)">34 <span class="bar-sub">13%</span></span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:13%;background:var(--green)"></div></div>
-      </div>
-      <div class="bar-row">
-        <div class="bar-meta"><span class="bar-label">Replied</span><span class="bar-value" style="color:var(--accent);filter:brightness(.75)">9 <span class="bar-sub">3%</span></span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:3%;background:var(--accent)"></div></div>
-      </div>
-      <div class="bar-row">
-        <div class="bar-meta"><span class="bar-label">Not Interested</span><span class="bar-value" style="color:var(--bubble)">2 <span class="bar-sub">1%</span></span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:1%;background:var(--bubble)"></div></div>
-      </div>
-    </div>
+    <div class="source-info">Total in DB: <strong id="source-total">—</strong></div>
   </div>
 
 </div>
@@ -484,7 +533,7 @@
 
   <!-- FULL FUNNEL -->
   <div class="card">
-    <div class="card-title">🔽 Full Funnel — Sourcing to Interview</div>
+    <div class="card-title">🔽 Full Funnel — Pipeline to Interview</div>
     <div class="funnel-row" id="funnel"></div>
   </div>
 
@@ -496,13 +545,12 @@
     </div>
   </div>
 
-  <!-- SOURCE CHANNELS -->
+  <!-- SOURCE COMPANIES -->
   <div class="card">
-    <div class="card-title">📡 Source Channels</div>
-    <div class="chart-wrap-sm">
-      <canvas id="sourceChart"></canvas>
+    <div class="card-title">🏢 Top Source Companies</div>
+    <div id="company-breakdown">
+      <div class="tba">Loading…</div>
     </div>
-    <div class="source-info">Total in DB: <strong>302</strong> · DACH expansion next week</div>
   </div>
 
 </div>
@@ -510,109 +558,542 @@
 <!-- FOOTER -->
 <div class="footer-bar">
   <span class="footer-icon">📋</span>
-  <span>Cells marked <strong>to fill in</strong> need manual input — update Reply, Connection Accepted, and call outcomes in Notion. Dashboard recalculates on next refresh.</span>
+  <span>Live data from Notion · <strong id="footer-total">—</strong> candidates total · Refresh anytime to recalculate.</span>
 </div>
 
 </div><!-- /wrapper -->
 
 <script>
-// ── FUNNEL ──────────────────────────────────────────────────────────────────
-const funnelData = [
-  { label: "Surfaced",    value: 1368, color: "#2A4A35" },
-  { label: "Reviewed",    value: 429,  color: "#12331F" },
-  { label: "Shortlisted", value: 258,  color: "#00712D" },
-  { label: "Outreach",    value: 34,   color: "#6FED6D" },
-  { label: "Replied",     value: 9,    color: "#E26A9E" },
-  { label: "Interview",   value: 1,    color: "#00712D" },
-];
+// ═══════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════
+const DB_ID = '37b8d34b2601804b91cec3dc8dc4456f';
+const STORAGE_TOKEN_KEY = 'ae_notion_token';
+const STORAGE_WORKER_KEY = 'ae_worker_url';
 
-const container = document.getElementById('funnel');
-const maxVal = funnelData[0].value;
+let tierChartInstance = null;
+let sourceChartInstance = null;
 
-funnelData.forEach((step, i) => {
-  const h = Math.max(14, Math.round((step.value / maxVal) * 90));
-  const conv = i > 0 ? Math.round((step.value / funnelData[i-1].value) * 100) + '%' : null;
-
-  const col = document.createElement('div');
-  col.className = 'funnel-col';
-  col.innerHTML = `
-    <div class="funnel-num" style="color:${step.color}">${step.value.toLocaleString()}</div>
-    <div class="funnel-bar" style="height:${h}px;background:${step.color}"></div>
-    <div class="funnel-lbl">${step.label}</div>
-    ${conv ? `<div class="funnel-conv">${conv}</div>` : ''}
-  `;
-  container.appendChild(col);
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+  const worker = localStorage.getItem(STORAGE_WORKER_KEY);
+  if (token && worker) {
+    document.getElementById('login-overlay').classList.add('hidden');
+    loadData();
+  }
+  // Pre-fill saved worker URL in login form
+  const savedWorker = localStorage.getItem(STORAGE_WORKER_KEY);
+  if (savedWorker) document.getElementById('worker-input').value = savedWorker;
 });
 
-// ── TIER CHART ───────────────────────────────────────────────────────────────
-const tierCtx = document.getElementById('tierChart').getContext('2d');
-new Chart(tierCtx, {
-  type: 'bar',
-  data: {
-    labels: ['T1 Dream', 'T2 Strong', 'T3 High-Pot'],
-    datasets: [{
-      data: [41, 136, 81],
-      backgroundColor: ['#E26A9E', '#00712D', '#6FED6D'],
-      borderRadius: 2,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: { label: ctx => ` ${ctx.raw} candidates` }
-      }
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { font: { size: 10 }, color: '#2A4A35' }
+// ═══════════════════════════════════════════════════════
+//  LOGIN
+// ═══════════════════════════════════════════════════════
+function handleLogin() {
+  const token = document.getElementById('token-input').value.trim();
+  const worker = document.getElementById('worker-input').value.trim().replace(/\/$/, '');
+  const errEl = document.getElementById('login-error');
+
+  if (!token) { showLoginError('Please enter your Notion token.'); return; }
+  if (!worker || !worker.startsWith('http')) { showLoginError('Please enter a valid worker URL (starting with https://).'); return; }
+
+  errEl.style.display = 'none';
+  document.getElementById('login-btn').disabled = true;
+
+  localStorage.setItem(STORAGE_TOKEN_KEY, token);
+  localStorage.setItem(STORAGE_WORKER_KEY, worker);
+  document.getElementById('login-overlay').classList.add('hidden');
+  loadData();
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('login-btn').disabled = false;
+}
+
+function doLogout() {
+  localStorage.removeItem(STORAGE_TOKEN_KEY);
+  localStorage.removeItem(STORAGE_WORKER_KEY);
+  document.getElementById('token-input').value = '';
+  document.getElementById('login-btn').disabled = false;
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('login-overlay').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════
+//  NOTION FETCH — paginate through all results
+// ═══════════════════════════════════════════════════════
+async function fetchAllPages() {
+  const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+  const workerBase = localStorage.getItem(STORAGE_WORKER_KEY);
+  const url = `${workerBase}/v1/databases/${DB_ID}/query`;
+
+  let allResults = [];
+  let cursor = undefined;
+  let pageCount = 0;
+
+  do {
+    const body = { page_size: 100 };
+    if (cursor) body.start_cursor = cursor;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28',
       },
-      y: {
-        grid: { color: '#F0E8DA' },
-        ticks: { font: { size: 10 }, color: '#2A4A35' }
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    allResults = allResults.concat(data.results || []);
+    pageCount += (data.results || []).length;
+    document.getElementById('loading-count').textContent = `${pageCount} candidates loaded…`;
+    cursor = data.has_more ? data.next_cursor : undefined;
+  } while (cursor);
+
+  return allResults;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROPERTY HELPERS
+// ═══════════════════════════════════════════════════════
+function getPropValue(page, propName) {
+  const props = page.properties;
+  // Case-insensitive lookup
+  const key = Object.keys(props).find(k => k.toLowerCase() === propName.toLowerCase()) || propName;
+  const prop = props[key];
+  if (!prop) return null;
+
+  switch (prop.type) {
+    case 'select':     return prop.select?.name || null;
+    case 'multi_select': return prop.multi_select?.map(s => s.name) || [];
+    case 'checkbox':   return prop.checkbox;
+    case 'title':      return prop.title?.map(t => t.plain_text).join('') || '';
+    case 'rich_text':  return prop.rich_text?.map(t => t.plain_text).join('') || '';
+    case 'phone_number': return prop.phone_number || '';
+    case 'email':      return prop.email || '';
+    case 'date':       return prop.date?.start || null;
+    case 'number':     return prop.number;
+    case 'url':        return prop.url || '';
+    default:           return null;
+  }
+}
+
+function getText(page, propName) {
+  const v = getPropValue(page, propName);
+  if (typeof v === 'string') return v;
+  if (Array.isArray(v)) return v.join(', ');
+  return '';
+}
+
+function isTruthy(page, propName) {
+  const v = getPropValue(page, propName);
+  if (v === true) return true;
+  if (typeof v === 'string') return v.trim().length > 0 && v.toLowerCase() !== 'no' && v.toLowerCase() !== 'false';
+  if (Array.isArray(v)) return v.length > 0;
+  return false;
+}
+
+// Stage groupings
+const OUTREACH_STAGES = ['in outreach', 'outreach', 'sent', 'connection sent', 'message sent', 'replied', 'positive', 'negative', 'call', 'interview', 'scheduled', 'not interested', 'no interest'];
+const REPLIED_STAGES  = ['replied', 'positive reply', 'interested', 'not interested', 'call', 'interview', 'scheduled'];
+const INTERVIEW_STAGES = ['interview', 'scheduled', 'interview scheduled', '1st interview', '2nd interview'];
+const COMPLETED_STAGES = ['completed', '2nd interview', 'offer', 'hired'];
+const ADVANCED_STAGES  = ['advanced', '2nd interview', 'offer', 'hired'];
+
+function stageIn(stage, list) {
+  if (!stage) return false;
+  const s = stage.toLowerCase().trim();
+  return list.some(l => s.includes(l) || l.includes(s));
+}
+
+// ═══════════════════════════════════════════════════════
+//  COMPUTE METRICS
+// ═══════════════════════════════════════════════════════
+function computeMetrics(pages) {
+  const total = pages.length;
+
+  // ── TIER ─────────────────────────────────────────────
+  // Actual values: "Tier 1 Dream", "Tier 2 Strong Adjacent", "Tier 3 High Potential", "Out"
+  const tierCounts = {};
+  pages.forEach(p => {
+    const tier = getText(p, 'Tier');
+    if (tier) tierCounts[tier] = (tierCounts[tier] || 0) + 1;
+  });
+  const sumTier = (fn) => Object.entries(tierCounts).filter(([k]) => fn(k.toLowerCase())).reduce((s, [,v]) => s + v, 0);
+  const t1 = sumTier(k => k.includes('tier 1') || k === '1' || k === 't1');
+  const t2 = sumTier(k => k.includes('tier 2') || k === '2' || k === 't2');
+  const t3 = sumTier(k => k.includes('tier 3') || k === '3' || k === 't3');
+  const tOut = sumTier(k => k === 'out' || k === 'filtered out' || k === 'not relevant');
+  // In pipeline = has a Tier that is NOT "Out"
+  const tieredTotal = t1 + t2 + t3;
+
+  // ── STAGE (if exists) ─────────────────────────────────
+  const stageCounts = {};
+  pages.forEach(p => {
+    const stage = getText(p, 'Stage');
+    if (stage) stageCounts[stage] = (stageCounts[stage] || 0) + 1;
+  });
+
+  // ── INTERVIEW column ──────────────────────────────────
+  // "Interview" is its own column showing interview phase
+  const interviewPages = pages.filter(p => {
+    const iv = getText(p, 'Interview');
+    return iv && iv.trim().length > 0;
+  });
+  const interviewCount = interviewPages.length;
+
+  // ── OUTREACH / REPLIES ────────────────────────────────
+  // Stage-based if Stage exists, otherwise use Tier as proxy
+  const hasStageData = Object.keys(stageCounts).length > 0;
+  const outreachCount = hasStageData
+    ? pages.filter(p => stageIn(getText(p, 'Stage'), OUTREACH_STAGES)).length
+    : pages.filter(p => {
+        const t = getText(p, 'Tier');
+        return t && t.toLowerCase() !== 'out' && t.trim().length > 0;
+      }).length;
+
+  const repliedCount = pages.filter(p => {
+    const stage = getText(p, 'Stage');
+    const reply = getText(p, 'Reply');
+    return stageIn(stage, REPLIED_STAGES) ||
+           (reply && reply.trim() !== '' && !['no reply','no response','not replied','—','-'].includes(reply.toLowerCase()));
+  }).length;
+
+  const completedCount = pages.filter(p => stageIn(getText(p, 'Stage'), COMPLETED_STAGES)).length;
+  const advancedCount  = pages.filter(p => stageIn(getText(p, 'Stage'), ADVANCED_STAGES)).length;
+
+  // ── CONNECTION / MESSAGE SEEN ─────────────────────────
+  const connAccepted = pages.filter(p => isTruthy(p, 'Connection Accepted')).length;
+  const msgSeen      = pages.filter(p => isTruthy(p, 'Message Seen')).length;
+
+  // ── LUSHA DATA ────────────────────────────────────────
+  const hasEmail = pages.filter(p => getText(p, '(Lusha) Work email').length > 0).length;
+  const hasPhone = pages.filter(p => getText(p, '(Lusha) Phone number 1').length > 0).length;
+  const hasPhone2 = pages.filter(p => getText(p, '(Lusha) Phone number 2').length > 0).length;
+
+  // ── CALL ATTEMPTS ─────────────────────────────────────
+  // Call? is a date field — count non-empty = called
+  const calledCount = pages.filter(p => {
+    const v = getPropValue(p, 'Call?');
+    if (v === true) return true;
+    if (typeof v === 'string') return v.trim().length > 0;
+    return false;
+  }).length;
+
+  // ── REPLY BREAKDOWN ───────────────────────────────────
+  const replyCounts = {};
+  pages.forEach(p => {
+    const r = getText(p, 'Reply');
+    const key = r && r.trim().length > 0 ? r : 'No Reply';
+    replyCounts[key] = (replyCounts[key] || 0) + 1;
+  });
+
+  // ── SOURCE CHANNELS ───────────────────────────────────
+  const sourceCounts = {};
+  pages.forEach(p => {
+    const s = getText(p, 'Source Channel');
+    const key = s && s.trim().length > 0 ? s : 'Unknown';
+    sourceCounts[key] = (sourceCounts[key] || 0) + 1;
+  });
+
+  // ── SOURCE COMPANIES (current employer) ───────────────
+  const companyCounts = {};
+  pages.forEach(p => {
+    const s = getText(p, 'Source Company');
+    if (s && s.trim().length > 0) companyCounts[s] = (companyCounts[s] || 0) + 1;
+  });
+
+  // ── CURRENT ROLES ─────────────────────────────────────
+  const roleCounts = {};
+  pages.forEach(p => {
+    const r = getText(p, 'Current Role');
+    if (r && r.trim().length > 0) roleCounts[r] = (roleCounts[r] || 0) + 1;
+  });
+
+  // ── INTERVIEW CANDIDATE NAMES ─────────────────────────
+  const interviewNames = interviewPages.map(p => {
+    // Try multiple name field variants
+    const first = getText(p, 'Name') || getText(p, 'First Name');
+    const last  = getText(p, 'Last Name') || getText(p, 'Surname');
+    const phase = getText(p, 'Interview');
+    const name = [first, last].filter(Boolean).join(' ') || '(unnamed)';
+    return phase ? `${name} — ${phase}` : name;
+  });
+
+  const replyRate = outreachCount > 0 ? Math.round((repliedCount / outreachCount) * 100) : 0;
+
+  return {
+    total, tieredTotal, t1, t2, t3, tOut,
+    calledCount, hasPhone2, roleCounts,
+    outreachCount, repliedCount, replyRate,
+    interviewCount, completedCount, advancedCount,
+    connAccepted, msgSeen, hasEmail, hasPhone,
+    stageCounts, replyCounts, callCounts, sourceCounts, companyCounts,
+    interviewNames,
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════
+function fmt(n) { return n.toLocaleString(); }
+function pct(n, total) { return total > 0 ? Math.round((n / total) * 100) : 0; }
+
+function renderMetrics(m) {
+  // KPI strip
+  set('kpi-shortlisted', fmt(m.tieredTotal));
+  set('kpi-outreach', fmt(m.outreachCount));
+  set('kpi-connections', fmt(m.calledCount));
+  set('kpi-replied', fmt(m.repliedCount));
+  set('kpi-interviews', fmt(m.interviewCount));
+  set('kpi-replyrate', m.replyRate + '%');
+
+  // Shortlist card
+  set('sl-total', fmt(m.total));
+  set('sl-tiered', fmt(m.tieredTotal) + ' in pipeline');
+  set('sl-out', fmt(m.tOut) + ' marked Out');
+
+  const tierBase = m.tieredTotal || 1;
+  const t1p = pct(m.t1, tierBase);
+  const t2p = pct(m.t2, tierBase);
+  const t3p = pct(m.t3, tierBase);
+  set('sl-t1', `${fmt(m.t1)} <span class="bar-sub">${t1p}%</span>`);
+  set('sl-t2', `${fmt(m.t2)} <span class="bar-sub">${t2p}%</span>`);
+  set('sl-t3', `${fmt(m.t3)} <span class="bar-sub">${t3p}%</span>`);
+  setWidth('sl-t1-bar', t1p);
+  setWidth('sl-t2-bar', t2p);
+  setWidth('sl-t3-bar', t3p);
+
+  const emailPct = pct(m.hasEmail, m.total);
+  const phonePct = pct(m.hasPhone, m.total);
+  const phone2Pct = pct(m.hasPhone2, m.total);
+  const calledPct = pct(m.calledCount, m.total);
+
+  set('out-accepted', `${fmt(m.calledCount)} <span class="bar-sub">${calledPct}%</span>`);
+  set('out-seen',     `${fmt(m.connAccepted)} <span class="bar-sub">${pct(m.connAccepted, m.total)}%</span>`);
+  set('out-email',    `${fmt(m.hasEmail)} <span class="bar-sub">${emailPct}%</span>`);
+  set('out-phone',    `${fmt(m.hasPhone)} <span class="bar-sub">${phonePct}%</span>`);
+  setWidth('out-accepted-bar', calledPct);
+  setWidth('out-seen-bar', pct(m.connAccepted, m.total));
+  setWidth('out-email-bar', emailPct);
+  setWidth('out-phone-bar', phonePct);
+
+  // Reply breakdown
+  const replyEl = document.getElementById('reply-breakdown');
+  replyEl.innerHTML = Object.entries(m.replyCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => barRow(k, v, m.total, replyColor(k)))
+    .join('') || '<div class="tba">No reply data</div>';
+
+  // Call breakdown
+  const callEl = document.getElementById('call-breakdown');
+  callEl.innerHTML = Object.entries(m.callCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => barRow(k, v, m.total, 'var(--spirulina)'))
+    .join('') || '<div class="tba">No call data</div>';
+
+  // Stage breakdown
+  const stageEl = document.getElementById('stage-breakdown');
+  stageEl.innerHTML = Object.entries(m.stageCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => barRow(k, v, m.total, stageColor(k)))
+    .join('') || '<div class="tba">No stage data</div>';
+
+  // Interviews
+  set('int-scheduled', fmt(m.interviewCount));
+  set('int-completed', fmt(m.completedCount));
+  set('int-advanced', fmt(m.advancedCount));
+  const intListEl = document.getElementById('interview-list');
+  if (m.interviewNames.length) {
+    intListEl.innerHTML = m.interviewNames.map(n =>
+      `<div class="interview-highlight">${n}</div>`
+    ).join('');
+  } else {
+    intListEl.innerHTML = '<div class="tba">No interviews yet</div>';
+  }
+
+  // Source total
+  set('source-total', fmt(m.total));
+  set('footer-total', fmt(m.total));
+
+  // Funnel
+  renderFunnel(m);
+
+  // Charts
+  renderTierChart(m);
+  renderSourceChart(m);
+
+  // Source companies
+  const compEl = document.getElementById('company-breakdown');
+  const topCompanies = Object.entries(m.companyCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+  if (topCompanies.length) {
+    compEl.innerHTML = topCompanies
+      .map(([k, v]) => `<div class="breakdown-row"><span class="breakdown-key">${k}</span><span class="breakdown-val">${v}</span></div>`)
+      .join('');
+  } else {
+    compEl.innerHTML = '<div class="tba">No company data</div>';
+  }
+
+  // Last updated
+  const now = new Date();
+  set('last-updated', `Updated ${now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`);
+}
+
+function barRow(label, value, total, color) {
+  const p = pct(value, total);
+  return `
+    <div class="bar-row">
+      <div class="bar-meta">
+        <span class="bar-label">${label}</span>
+        <span class="bar-value" style="color:${color}">${fmt(value)} <span class="bar-sub">${p}%</span></span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${color}"></div></div>
+    </div>`;
+}
+
+function replyColor(key) {
+  const k = key.toLowerCase();
+  if (k.includes('positive') || k.includes('interested') || k.includes('yes')) return 'var(--green)';
+  if (k.includes('negative') || k.includes('not interested') || k.includes('no interest')) return 'var(--bubble)';
+  return 'var(--muted)';
+}
+
+function stageColor(key) {
+  const k = key.toLowerCase();
+  if (k.includes('interview') || k.includes('scheduled')) return 'var(--green)';
+  if (k.includes('replied')) return 'var(--accent)';
+  if (k.includes('outreach') || k.includes('sent')) return '#2A4A35';
+  if (k.includes('not interested') || k.includes('out')) return 'var(--bubble)';
+  return 'var(--muted)';
+}
+
+function renderFunnel(m) {
+  const steps = [
+    { label: 'In DB',      value: m.total,          color: '#2A4A35' },
+    { label: 'Tiered',     value: m.tieredTotal,     color: '#12331F' },
+    { label: 'Outreach',   value: m.outreachCount,   color: '#00712D' },
+    { label: 'Connections',value: m.connAccepted,    color: '#6FED6D' },
+    { label: 'Replied',    value: m.repliedCount,    color: '#E26A9E' },
+    { label: 'Interview',  value: m.interviewCount,  color: '#00712D' },
+  ].filter(s => s.value > 0);
+
+  const container = document.getElementById('funnel');
+  container.innerHTML = '';
+  const maxVal = steps[0]?.value || 1;
+
+  steps.forEach((step, i) => {
+    const h = Math.max(12, Math.round((step.value / maxVal) * 90));
+    const conv = i > 0 && steps[i-1].value > 0 ? Math.round((step.value / steps[i-1].value) * 100) + '%' : null;
+    const col = document.createElement('div');
+    col.className = 'funnel-col';
+    col.innerHTML = `
+      <div class="funnel-num" style="color:${step.color}">${fmt(step.value)}</div>
+      <div class="funnel-bar" style="height:${h}px;background:${step.color}"></div>
+      <div class="funnel-lbl">${step.label}</div>
+      ${conv ? `<div class="funnel-conv">${conv}</div>` : ''}
+    `;
+    container.appendChild(col);
+  });
+}
+
+function renderTierChart(m) {
+  const ctx = document.getElementById('tierChart').getContext('2d');
+  if (tierChartInstance) tierChartInstance.destroy();
+
+  // Collect all tier keys
+  const labels = [], data = [], colors = [];
+  if (m.t1) { labels.push('T1 Dream'); data.push(m.t1); colors.push('#E26A9E'); }
+  if (m.t2) { labels.push('T2 Strong'); data.push(m.t2); colors.push('#00712D'); }
+  if (m.t3) { labels.push('T3 High-Pot'); data.push(m.t3); colors.push('#6FED6D'); }
+
+  tierChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: colors, borderRadius: 2 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw} candidates` } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#2A4A35' } },
+        y: { grid: { color: '#F0E8DA' }, ticks: { font: { size: 10 }, color: '#2A4A35' } }
       }
     }
-  }
-});
+  });
+}
 
-// ── SOURCE CHART ─────────────────────────────────────────────────────────────
-const sourceCtx = document.getElementById('sourceChart').getContext('2d');
-new Chart(sourceCtx, {
-  type: 'bar',
-  data: {
-    labels: ['Sales Nav', 'Company Search', 'LinkedIn SN', 'Headhunters'],
-    datasets: [{
-      data: [207, 35, 7, 0],
-      backgroundColor: ['#12331F', '#00712D', '#2A4A35', '#E26A9E'],
-      borderRadius: 2,
-    }]
-  },
-  options: {
-    indexAxis: 'y',
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: { label: ctx => ` ${ctx.raw} candidates` }
-      }
+function renderSourceChart(m) {
+  const ctx = document.getElementById('sourceChart').getContext('2d');
+  if (sourceChartInstance) sourceChartInstance.destroy();
+
+  const sorted = Object.entries(m.sourceCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const palette = ['#12331F', '#00712D', '#2A4A35', '#E26A9E', '#6FED6D', '#F0E8DA'];
+
+  sourceChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sorted.map(([k]) => k),
+      datasets: [{ data: sorted.map(([,v]) => v), backgroundColor: palette, borderRadius: 2 }]
     },
-    scales: {
-      x: {
-        grid: { color: '#F0E8DA' },
-        ticks: { font: { size: 10 }, color: '#2A4A35' }
-      },
-      y: {
-        grid: { display: false },
-        ticks: { font: { size: 10 }, color: '#2A4A35' }
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw} candidates` } } },
+      scales: {
+        x: { grid: { color: '#F0E8DA' }, ticks: { font: { size: 10 }, color: '#2A4A35' } },
+        y: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#2A4A35' } }
       }
     }
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOAD DATA
+// ═══════════════════════════════════════════════════════
+async function loadData() {
+  const loadingEl = document.getElementById('loading-overlay');
+  loadingEl.classList.remove('hidden');
+  document.getElementById('loading-count').textContent = '';
+
+  try {
+    const pages = await fetchAllPages();
+    const metrics = computeMetrics(pages);
+    renderMetrics(metrics);
+  } catch (err) {
+    alert('Error loading data: ' + err.message + '\n\nCheck your token and worker URL.');
+    doLogout();
+  } finally {
+    loadingEl.classList.add('hidden');
   }
-});
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTIL
+// ═══════════════════════════════════════════════════════
+function set(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+function setWidth(id, pct) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = Math.min(pct, 100) + '%';
+}
 </script>
-
 </body>
 </html>
