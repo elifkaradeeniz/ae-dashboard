@@ -672,7 +672,7 @@ async function fetchAllPages() {
 function getPropValue(page, propName) {
   const props = page.properties;
   // Case-insensitive lookup
-  const key = Object.keys(props).find(k => k.toLowerCase() === propName.toLowerCase()) || propName;
+  const key = Object.keys(props).find(k => k.toLowerCase().trim() === propName.toLowerCase().trim()) || propName;
   const prop = props[key];
   if (!prop) return null;
 
