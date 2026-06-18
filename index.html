@@ -841,7 +841,7 @@ function computeMetrics(pages) {
     outreachCount, repliedCount, replyRate,
     interviewCount, completedCount, advancedCount,
     connAccepted, msgSeen, hasEmail, hasPhone,
-    stageCounts, replyCounts, callCounts, sourceCounts, companyCounts,
+    stageCounts, replyCounts, sourceCounts, companyCounts, roleCounts,
     interviewNames,
   };
 }
@@ -898,12 +898,13 @@ function renderMetrics(m) {
     .map(([k, v]) => barRow(k, v, m.total, replyColor(k)))
     .join('') || '<div class="tba">No reply data</div>';
 
-  // Call breakdown
+  // Call breakdown — simple count
   const callEl = document.getElementById('call-breakdown');
-  callEl.innerHTML = Object.entries(m.callCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([k, v]) => barRow(k, v, m.total, 'var(--spirulina)'))
-    .join('') || '<div class="tba">No call data</div>';
+  const notCalled = m.total - m.calledCount;
+  callEl.innerHTML = m.calledCount > 0
+    ? barRow('Called', m.calledCount, m.total, 'var(--green)') +
+      barRow('Not yet called', notCalled, m.total, 'var(--muted)')
+    : '<div class="tba">No call data</div>';
 
   // Stage breakdown
   const stageEl = document.getElementById('stage-breakdown');
