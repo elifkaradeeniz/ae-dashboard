@@ -707,17 +707,7 @@ function isTruthy(page, propName) {
 }
 
 // Stage groupings
-const OUTREACH_STAGES = ['in outreach', 'outreach', 'sent', 'connection sent', 'message sent', 'replied', 'positive', 'negative', 'call', 'interview', 'scheduled', 'not interested', 'no interest'];
-const REPLIED_STAGES  = ['replied', 'positive reply', 'interested', 'not interested', 'call', 'interview', 'scheduled'];
-const INTERVIEW_STAGES = ['interview', 'scheduled', 'interview scheduled', '1st interview', '2nd interview'];
-const COMPLETED_STAGES = ['completed', '2nd interview', 'offer', 'hired'];
-const ADVANCED_STAGES  = ['advanced', '2nd interview', 'offer', 'hired'];
-
-function stageIn(stage, list) {
-  if (!stage) return false;
-  const s = stage.toLowerCase().trim();
-  return list.some(l => s.includes(l) || l.includes(s));
-}
+// Stage values come directly from Notion — no hardcoded guesses
 
 // ═══════════════════════════════════════════════════════
 //  COMPUTE METRICS
@@ -756,24 +746,24 @@ function computeMetrics(pages) {
   const interviewCount = interviewPages.length;
 
   // ── OUTREACH / REPLIES ────────────────────────────────
-  // Stage-based if Stage exists, otherwise use Tier as proxy
-  const hasStageData = Object.keys(stageCounts).length > 0;
-  const outreachCount = hasStageData
-    ? pages.filter(p => stageIn(getText(p, 'Stage'), OUTREACH_STAGES)).length
-    : pages.filter(p => {
-        const t = getText(p, 'Tier');
-        return t && t.toLowerCase() !== 'out' && t.trim().length > 0;
-      }).length;
-
-  const repliedCount = pages.filter(p => {
-    const stage = getText(p, 'Stage');
-    const reply = getText(p, 'Reply');
-    return stageIn(stage, REPLIED_STAGES) ||
-           (reply && reply.trim() !== '' && !['no reply','no response','not replied','—','-'].includes(reply.toLowerCase()));
+  // Use Tier as proxy for outreach (anyone with a tier was reached out to)
+  const outreachCount = pages.filter(p => {
+    const t = getText(p, 'Tier');
+    return t && t.toLowerCase() !== 'out' && t.trim().length > 0;
   }).length;
 
-  const completedCount = pages.filter(p => stageIn(getText(p, 'Stage'), COMPLETED_STAGES)).length;
-  const advancedCount  = pages.filter(p => stageIn(getText(p, 'Stage'), ADVANCED_STAGES)).length;
+  // Replied = Reply field is set and not empty/negative
+  const repliedCount = pages.filter(p => {
+    const reply = getText(p, 'Reply');
+    return reply && reply.trim() !== '' && !['no reply','no response','not replied','—','-','no'].includes(reply.toLowerCase());
+  }).length;
+
+  // Completed / advanced — based on Interview field having a later-stage value
+  const completedCount = interviewPages.filter(p => {
+    const iv = getText(p, 'Interview').toLowerCase();
+    return iv.includes('complet') || iv.includes('2nd') || iv.includes('offer') || iv.includes('hired');
+  }).length;
+  const advancedCount = completedCount;
 
   // ── CONNECTION / MESSAGE SEEN ─────────────────────────
   const connAccepted = pages.filter(p => isTruthy(p, 'Connection Accepted')).length;
