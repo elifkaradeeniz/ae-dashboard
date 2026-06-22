@@ -137,10 +137,35 @@
   }
   .logout-btn:hover { color: rgba(255,255,255,.7); }
 
+  /* ── WEEK SELECTOR ── */
+  .week-nav { display: flex; align-items: center; gap: 6px; }
+  .week-nav-label { font-size: 10px; color: rgba(255,255,255,.4); margin-right: 2px; }
+  .week-btn {
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+    color: rgba(255,255,255,.6); border-radius: 2px;
+    padding: 5px 14px; font-size: 11px; font-weight: 700;
+    cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .week-btn:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .week-btn.active { background: var(--accent); color: var(--black); border-color: var(--accent); }
+
+  /* ── ROLE SELECTOR ── */
+  .role-nav { display: flex; align-items: center; gap: 5px; }
+  .role-nav-label { font-size: 10px; color: rgba(255,255,255,.35); margin-right: 3px; white-space: nowrap; }
+  .role-btn {
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+    color: rgba(255,255,255,.5); border-radius: 2px;
+    padding: 5px 12px; font-size: 10px; font-weight: 700; letter-spacing: .02em;
+    cursor: pointer; transition: all .15s; font-family: inherit; white-space: nowrap;
+  }
+  .role-btn:hover { background: rgba(255,255,255,.15); color: rgba(255,255,255,.85); }
+  .role-btn.active { background: var(--bubble); color: #fff; border-color: var(--bubble); }
+  .header-sep { width: 1px; height: 20px; background: rgba(255,255,255,.1); margin: 0 4px; }
+
   /* ── KPI STRIP ── */
   .kpi-strip {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 1px;
     background: var(--paper2);
   }
@@ -337,41 +362,6 @@
 </head>
 <body>
 
-<!-- LOGIN OVERLAY -->
-<div id="login-overlay">
-  <div class="login-box">
-    <div class="login-logo">
-      <svg width="80" height="25" viewBox="0 0 152 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g clip-path="url(#lc2)">
-          <path d="M21.93 2.2H15.89L.5 36.29H7.32L9.85 30.4H27.97L30.5 36.29H37.32L21.93 2.2ZM12.24 24.9L18.86 9.46H18.96L25.58 24.9H12.23Z" fill="#12331F"/>
-          <path d="M45.8 28.21H45.7L37.32 10.48H30.6L42.48 34.59L36.15 47.26H42.87L60.89 10.48H54.12L45.8 28.21Z" fill="#12331F"/>
-          <path d="M77.85 9.75C74.2 9.75 71.03 10.92 68.94 12.92H68.84V.74H62.8V36.3H68.5V33.57H68.6C70.6 35.76 73.76 37.03 77.61 37.03C85.74 37.03 91.54 31.38 91.54 23.39C91.54 15.4 85.7 9.75 77.85 9.75ZM77.02 31.72C72.49 31.72 68.84 28.7 68.84 25.05V21.64C68.84 17.99 72.59 15.06 77.07 15.06C82.13 15.06 85.5 18.37 85.5 23.39C85.5 28.41 82.14 31.72 77.03 31.72Z" fill="#12331F"/>
-          <path d="M121.17 22.53C120.6 14.71 114.67 9.18 106.42 9.79C98.41 10.38 92.99 16.49 93.58 24.5C94.18 32.66 100.06 37.6 108.75 36.97C114.04 36.58 118.03 34.34 120.71 30.28L116.42 26.98C114.26 30.12 111.78 31.71 108.34 31.97C103.63 32.32 100.18 29.93 99.69 25.91L121.31 24.33L121.17 22.53ZM99.46 21.53C99.58 17.86 102.55 15.1 106.88 14.78C111.11 14.47 114.45 16.77 115.06 20.38L99.46 21.53Z" fill="#12331F"/>
-          <path d="M146.62 25.05C145.14 28.56 143.05 30.63 139.73 31.59C135.19 32.89 131.33 31.26 130.03 27.43L150.87 21.46L150.37 19.73C148.21 12.19 141.28 8 133.32 10.28C125.6 12.5 121.55 19.58 123.76 27.31C126.02 35.18 132.78 38.81 141.16 36.41C146.26 34.95 149.71 31.93 151.5 27.42L146.62 25.05ZM134.79 15.06C138.86 13.89 142.6 15.45 143.94 18.87L128.91 23.18C128.28 19.56 130.62 16.25 134.79 15.06Z" fill="#12331F"/>
-        </g>
-        <defs><clipPath id="lc2"><rect width="152" height="48" fill="white"/></clipPath></defs>
-      </svg>
-    </div>
-    <div class="login-title">AE Hiring OS</div>
-    <div class="login-sub">Enter your Notion integration token to load live data from the AE Candidates database.</div>
-    <label class="login-label" for="token-input">Notion Integration Token</label>
-    <input id="token-input" class="login-input" type="password" placeholder="secret_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-    <label class="login-label" for="worker-input">Proxy Worker URL</label>
-    <input id="worker-input" class="login-input" type="text" placeholder="https://notion-proxy.YOURNAME.workers.dev" />
-    <button id="login-btn" class="login-btn" onclick="handleLogin()">Load Dashboard →</button>
-    <div id="login-error" class="login-error" style="display:none"></div>
-  </div>
-</div>
-
-<!-- LOADING OVERLAY -->
-<div id="loading-overlay" class="hidden">
-  <div class="loading-box">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">Loading candidates from Notion…</div>
-    <div class="loading-count" id="loading-count"></div>
-  </div>
-</div>
-
 <!-- HEADER -->
 <div class="header">
   <div class="header-left">
@@ -387,42 +377,49 @@
     </svg>
     <div class="header-divider"></div>
     <div>
-      <div class="header-title">AE Hiring OS</div>
-      <div class="header-sub">Account Executive · Munich / DACH</div>
+      <div class="header-title" id="header-title">AE Hiring OS</div>
+      <div class="header-sub" id="header-sub">Account Executive · Munich / DACH</div>
     </div>
   </div>
   <div class="header-right">
-    <span class="updated" id="last-updated"></span>
-    <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
-    <button class="logout-btn" onclick="doLogout()" title="Change token">✕ Logout</button>
+    <!-- Role Selector -->
+    <div class="role-nav">
+      <span class="role-nav-label">ROLE</span>
+      <button class="role-btn active" data-role="ae"  onclick="switchRole('ae')">AE</button>
+      <button class="role-btn" data-role="fa"  onclick="switchRole('fa')">FA Intern</button>
+      <button class="role-btn" data-role="ga"  onclick="switchRole('ga')">Growth Associate</button>
+    </div>
+    <div class="header-sep"></div>
+    <!-- Week Selector -->
+    <div class="week-nav">
+      <span class="week-nav-label">WEEK</span>
+      <button class="week-btn" data-week="2" onclick="switchWeek(2)">W2</button>
+      <button class="week-btn active" data-week="3" onclick="switchWeek(3)">W3</button>
+    </div>
   </div>
 </div>
 
 <!-- KPI STRIP -->
 <div class="kpi-strip">
   <div class="kpi-cell">
-    <div class="kpi-num" id="kpi-shortlisted">—</div>
-    <div class="kpi-lbl">In Pipeline</div>
+    <div class="kpi-num" id="kpi-total">—</div>
+    <div class="kpi-lbl">Total in DB</div>
   </div>
   <div class="kpi-cell">
     <div class="kpi-num" id="kpi-outreach">—</div>
     <div class="kpi-lbl">Outreach Sent</div>
   </div>
   <div class="kpi-cell">
-    <div class="kpi-num" id="kpi-connections">—</div>
-    <div class="kpi-lbl">Called</div>
-  </div>
-  <div class="kpi-cell">
     <div class="kpi-num" id="kpi-replied">—</div>
     <div class="kpi-lbl">Replied</div>
   </div>
   <div class="kpi-cell">
-    <div class="kpi-num" id="kpi-interviews">—</div>
-    <div class="kpi-lbl">Interviews</div>
+    <div class="kpi-num" id="kpi-calls">—</div>
+    <div class="kpi-lbl">Calls</div>
   </div>
   <div class="kpi-cell highlight">
-    <div class="kpi-num" id="kpi-replyrate">—</div>
-    <div class="kpi-lbl">Reply Rate</div>
+    <div class="kpi-num" id="kpi-interviews">—</div>
+    <div class="kpi-lbl">Interviews</div>
   </div>
 </div>
 
@@ -469,20 +466,20 @@
   <!-- OUTREACH -->
   <div class="card accent-accent">
     <div class="card-title">📤 Outreach Coverage</div>
-    <div class="sec-lbl">Activity</div>
+    <div class="sec-lbl">Engagement</div>
     <div class="bar-row">
       <div class="bar-meta">
-        <span class="bar-label">Called (Call? date set)</span>
-        <span class="bar-value" style="color:var(--green)" id="out-accepted">—</span>
+        <span class="bar-label">Calls booked</span>
+        <span class="bar-value" style="color:var(--green)" id="out-called">—</span>
       </div>
-      <div class="bar-track"><div class="bar-fill" id="out-accepted-bar" style="width:0%;background:var(--green)"></div></div>
+      <div class="bar-track"><div class="bar-fill" id="out-called-bar" style="width:0%;background:var(--green)"></div></div>
     </div>
     <div class="bar-row">
       <div class="bar-meta">
         <span class="bar-label">Connection accepted</span>
-        <span class="bar-value" style="color:var(--green)" id="out-seen">—</span>
+        <span class="bar-value" style="color:var(--green)" id="out-conn">—</span>
       </div>
-      <div class="bar-track"><div class="bar-fill" id="out-seen-bar" style="width:0%;background:var(--green)"></div></div>
+      <div class="bar-track"><div class="bar-fill" id="out-conn-bar" style="width:0%;background:var(--green)"></div></div>
     </div>
     <div class="divider"></div>
     <div class="sec-lbl">Contact Info via Lusha</div>
@@ -502,16 +499,10 @@
     </div>
   </div>
 
-  <!-- RESPONSES -->
+  <!-- PIPELINE PROGRESS -->
   <div class="card accent-bubble">
-    <div class="card-title">💬 Responses</div>
-    <div class="sec-lbl">By Reply Status</div>
-    <div id="reply-breakdown">
-      <div class="tba">Loading…</div>
-    </div>
-    <div class="divider"></div>
-    <div class="sec-lbl">Calls</div>
-    <div id="call-breakdown">
+    <div class="card-title">📊 Pipeline Progress</div>
+    <div id="pipeline-progress">
       <div class="tba">Loading…</div>
     </div>
   </div>
@@ -521,10 +512,10 @@
 <!-- ROW 2 -->
 <div class="grid3">
 
-  <!-- PIPELINE STAGES -->
-  <div class="card">
-    <div class="card-title">📊 Pipeline Stages</div>
-    <div id="stage-breakdown">
+  <!-- HEADHUNTERS -->
+  <div class="card accent-spirulina">
+    <div class="card-title">🤝 Headhunters</div>
+    <div id="headhunters-list">
       <div class="tba">Loading…</div>
     </div>
   </div>
@@ -534,16 +525,12 @@
     <div class="card-title">🗓 Interviews</div>
     <div class="metric-trio">
       <div class="metric-item">
-        <div class="m-num" style="color:var(--spirulina)" id="int-scheduled">—</div>
-        <div class="m-lbl">Scheduled</div>
+        <div class="m-num" style="color:var(--spirulina)" id="int-total">—</div>
+        <div class="m-lbl">Total</div>
       </div>
       <div class="metric-item">
-        <div class="m-num" style="color:var(--muted)" id="int-completed">—</div>
-        <div class="m-lbl">Completed</div>
-      </div>
-      <div class="metric-item">
-        <div class="m-num" style="color:var(--green)" id="int-advanced">—</div>
-        <div class="m-lbl">Advanced</div>
+        <div class="m-num" style="color:var(--bubble)" id="int-dropped">—</div>
+        <div class="m-lbl">Dropped</div>
       </div>
     </div>
     <div id="interview-list">
@@ -583,506 +570,379 @@
 
 </div>
 
-<!-- CANDIDATES TABLE -->
-<div style="padding: 0 20px; margin-bottom: 10px;">
-  <div class="card" style="border-top-color: var(--spirulina);">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-      <div class="card-title" style="margin-bottom:0">👥 All Candidates</div>
-      <div style="display:flex; gap:6px;" id="tier-filters">
-        <button class="filter-btn active" onclick="filterCandidates('all')">All</button>
-        <button class="filter-btn" onclick="filterCandidates('tier1')">Tier 1</button>
-        <button class="filter-btn" onclick="filterCandidates('tier2')">Tier 2</button>
-        <button class="filter-btn" onclick="filterCandidates('tier3')">Tier 3</button>
-        <button class="filter-btn" onclick="filterCandidates('interview')">Interview</button>
-        <button class="filter-btn" onclick="filterCandidates('out')">Out</button>
-      </div>
-    </div>
-    <div style="overflow-x:auto;">
-      <table id="candidates-table" style="width:100%; border-collapse:collapse; font-size:11px;">
-        <thead>
-          <tr style="border-bottom:2px solid var(--paper2); text-align:left;">
-            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Name</th>
-            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Company</th>
-            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Role</th>
-            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Tier</th>
-            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Stage</th>
-            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Reply</th>
-            <th style="padding:6px 10px; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700;">Interview</th>
-          </tr>
-        </thead>
-        <tbody id="candidates-tbody">
-          <tr><td colspan="7" style="padding:16px; text-align:center; color:var(--muted);">Loading…</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div id="candidates-count" style="font-size:10px; color:var(--muted); margin-top:10px;"></div>
-  </div>
-</div>
-
 <!-- FOOTER -->
 <div class="footer-bar">
   <span class="footer-icon">📋</span>
-  <span>Live data from Notion · <strong id="footer-total">—</strong> candidates total · Refresh anytime to recalculate.</span>
+  <span>AE Hiring OS · <strong id="footer-total">—</strong> candidates total · Week-over-week static view</span>
+</div>
+
+<!-- NOTION CONNECTION BANNER -->
+<div id="notion-banner" style="display:none;margin-top:18px;background:var(--white);border:1px solid var(--paper2);border-radius:5px;padding:14px 18px;align-items:center;gap:12px;flex-wrap:wrap;">
+  <span style="font-size:12px;color:var(--muted);flex:1;min-width:200px;">🔗 Connect Notion to load the full candidates list</span>
+  <input id="notion-token-input" type="password" placeholder="Notion token (ntn_...)" style="flex:2;min-width:220px;padding:8px 10px;border:1px solid var(--paper2);border-radius:3px;font-size:11px;font-family:monospace;outline:none;">
+  <input id="worker-url-input" type="text" placeholder="Worker URL (https://...)" style="flex:2;min-width:220px;padding:8px 10px;border:1px solid var(--paper2);border-radius:3px;font-size:11px;font-family:monospace;outline:none;">
+  <button onclick="connectNotion()" style="padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;">Connect</button>
+</div>
+
+<!-- CANDIDATES TABLE -->
+<div id="candidates-section" style="margin-top:18px;display:none;">
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--paper2);display:flex;justify-content:space-between;align-items:center;">
+      <span class="card-title" style="margin:0;">👥 All Candidates</span>
+      <span id="cand-count" style="font-size:11px;color:var(--muted);"></span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="candidates-table" style="width:100%;border-collapse:collapse;font-size:11px;">
+        <thead>
+          <tr style="background:var(--paper2);">
+            <th style="padding:8px 12px;text-align:left;font-weight:700;color:var(--spirulina);white-space:nowrap;">Name</th>
+            <th style="padding:8px 12px;text-align:left;font-weight:700;color:var(--spirulina);">Company</th>
+            <th style="padding:8px 12px;text-align:center;font-weight:700;color:var(--spirulina);">Tier</th>
+            <th style="padding:8px 12px;text-align:left;font-weight:700;color:var(--spirulina);">Status</th>
+            <th style="padding:8px 12px;text-align:left;font-weight:700;color:var(--spirulina);">Interview</th>
+          </tr>
+        </thead>
+        <tbody id="candidates-tbody">
+          <tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 </div><!-- /wrapper -->
 
-<!-- CANDIDATE DETAIL PANEL -->
-<div id="candidate-overlay" style="display:none; position:fixed; inset:0; background:rgba(18,51,31,.4); z-index:500; backdrop-filter:blur(2px);" onclick="closePanel(event)"></div>
-<div id="candidate-panel" style="display:none; position:fixed; top:0; right:0; width:420px; max-width:96vw; height:100vh; background:var(--paper); z-index:501; overflow-y:auto; box-shadow:-4px 0 24px rgba(0,0,0,.15); transform:translateX(100%); transition:transform .25s ease;">
-  <div style="background:var(--spirulina); padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
-    <div>
-      <div id="panel-name" style="font-size:15px; font-weight:700; color:#fff;"></div>
-      <div id="panel-tier" style="font-size:10px; margin-top:3px;"></div>
-    </div>
-    <button onclick="closePanelBtn()" style="background:rgba(255,255,255,.1); border:none; color:#fff; border-radius:2px; padding:6px 10px; cursor:pointer; font-size:12px;">✕ Close</button>
-  </div>
-  <div style="padding:18px 20px;" id="panel-body"></div>
+<!-- SLIDE-OUT PANEL -->
+<div id="panel-overlay" onclick="closePanel()" style="display:none;position:fixed;inset:0;background:rgba(18,51,31,0.4);z-index:900;backdrop-filter:blur(2px);"></div>
+<div id="candidate-panel" style="
+  position:fixed;right:0;top:0;height:100vh;
+  width:min(420px,95vw);
+  background:var(--paper);
+  box-shadow:-4px 0 24px rgba(0,0,0,.15);
+  z-index:901;
+  transform:translateX(100%);
+  transition:transform .25s ease;
+  overflow-y:auto;
+  padding:28px 26px;
+">
+  <button onclick="closePanel()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);">✕</button>
+  <div id="panel-content"><!-- filled by JS --></div>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════
-//  CONFIG
+//  ROLE CONFIG
 // ═══════════════════════════════════════════════════════
-const DB_ID = '37b8d34b2601804b91cec3dc8dc4456f';
-const STORAGE_TOKEN_KEY = 'ae_notion_token';
-const STORAGE_WORKER_KEY = 'ae_worker_url';
+const ROLES = {
+  ae: {
+    label: 'AE Hiring OS',
+    sub:   'Account Executive · Munich / DACH',
+    dbId:  '37b8d34b2601804b91cec3dc8dc4456f',
+  },
+  fa: {
+    label: 'FA Intern Hiring',
+    sub:   'Founders Associate Intern',
+    dbId:  'd650e6c7b3a1456fbf8ff84e761d0840',
+  },
+  ga: {
+    label: 'Growth Associate Hiring',
+    sub:   'Growth Associate · Pioneer Program',
+    dbId:  null,   // DB not created yet — add ID when ready
+  },
+};
+let currentRole = 'ae';
 
+// ═══════════════════════════════════════════════════════
+//  STATIC WEEK DATA  (AE role — update other roles as needed)
+// ═══════════════════════════════════════════════════════
+const WEEK_DATA = {
+  2: {
+    label: 'Week 2',
+    total: 0, t1: 0, t2: 0, t3: 0,
+    outreach: 0, outreachPct: 0,
+    notStarted: 0, notStartedPct: 0,
+    replied: 0, repliedPct: 0,
+    notInterested: 0, notInterestedPct: 0,
+    called: 0, connAccepted: 0, connAcceptedPct: 0,
+    hasEmail: 0, hasPhone: 0,
+    interviews: [],
+    sourceCounts: {},
+    headhunters: [
+      { name: 'Flo', count: 0, candidates: [] },
+      { name: 'Dialedin', count: 0, candidates: [] },
+      { name: 'In2recruiting', count: 0, candidates: [] },
+    ]
+  },
+  3: {
+    label: 'Week 3',
+    total: 391, t1: 40, t2: 157, t3: 67,
+    outreach: 356, outreachPct: 91,
+    notStarted: 12, notStartedPct: 3,
+    replied: 43, repliedPct: 11,
+    notInterested: 35, notInterestedPct: 9,
+    called: 181, connAccepted: 235, connAcceptedPct: 60,
+    hasEmail: 0, hasPhone: 0,
+    interviews: [
+      { name: 'Ahsan Cheema',       phase: 'Dropped',              pageId: '37b8d34b-2601-8102-abb6-e209d74c5996' },
+      { name: 'Jennifer Lyra',      phase: 'Dropped',              pageId: '3818d34b-2601-80bd-903e-ea4eebd7af24' },
+      { name: 'Lasse Schmidt',      phase: 'Active',               pageId: '37b8d34b-2601-81fa-9f39-c00b6deea01c' },
+      { name: 'Jean-Dany Petit-Frere', phase: 'Dropped',            pageId: null },
+      { name: 'Frederick Mieke',    phase: 'Platform Walk-Through', pageId: '37b8d34b-2601-81dc-9059-fecbe7b083c0' },
+      { name: 'Maurice Brunnecker', phase: 'Dropped',              pageId: null },
+    ],
+    sourceCounts: {
+      'LinkedIn Sales Navigator': 386,
+      'Headhunter': 5,
+    },
+    headhunters: [
+      { name: 'Flo', count: 5, candidates: [
+        { name: 'Lasse Schmidt',        phase: 'Flocke Intro', pageId: '37b8d34b-2601-81fa-9f39-c00b6deea01c' },
+        { name: 'Jennifer Lyra',        phase: 'Dropped',      pageId: '3818d34b-2601-80bd-903e-ea4eebd7af24' },
+        { name: 'Frederick Pim',        phase: 'Flocke Intro', pageId: null },
+        { name: 'Jean-Dany Petit-Frere',phase: 'Dropped',      pageId: null },
+        { name: 'Vinzenz Maier',        phase: 'Dropped',      pageId: null },
+      ] },
+      { name: 'Dialedin', count: 0, candidates: [] },
+      { name: 'In2recruiting', count: 0, candidates: [] },
+    ]
+  }
+};
+
+let currentWeek = 3;
 let tierChartInstance = null;
 let sourceChartInstance = null;
 
+// (init at bottom)
+
 // ═══════════════════════════════════════════════════════
-//  INIT
+//  ROLE SELECTOR
 // ═══════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem(STORAGE_TOKEN_KEY);
-  const worker = localStorage.getItem(STORAGE_WORKER_KEY);
-  if (token && worker) {
-    document.getElementById('login-overlay').classList.add('hidden');
-    loadData();
+function switchRole(key) {
+  currentRole = key;
+  const role = ROLES[key];
+
+  // Update active button
+  document.querySelectorAll('.role-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.role === key);
+  });
+
+  // Update header title/sub
+  const t = document.getElementById('header-title');
+  const s = document.getElementById('header-sub');
+  if (t) t.textContent = role.label;
+  if (s) s.textContent = role.sub;
+
+  // For AE: show static week numbers; for others: show zeros / live only
+  if (key === 'ae') {
+    renderDashboard(WEEK_DATA[currentWeek]);
+  } else {
+    // Blank out the static numbers — live data will override
+    renderDashboard(WEEK_DATA[2]); // all-zeros template
   }
-  // Pre-fill saved worker URL in login form
-  const savedWorker = localStorage.getItem(STORAGE_WORKER_KEY);
-  if (savedWorker) document.getElementById('worker-input').value = savedWorker;
-});
 
-// ═══════════════════════════════════════════════════════
-//  LOGIN
-// ═══════════════════════════════════════════════════════
-function handleLogin() {
-  const token = document.getElementById('token-input').value.trim();
-  const worker = document.getElementById('worker-input').value.trim().replace(/\/$/, '');
-  const errEl = document.getElementById('login-error');
-
-  if (!token) { showLoginError('Please enter your Notion token.'); return; }
-  if (!worker || !worker.startsWith('http')) { showLoginError('Please enter a valid worker URL (starting with https://).'); return; }
-
-  errEl.style.display = 'none';
-  document.getElementById('login-btn').disabled = true;
-
-  localStorage.setItem(STORAGE_TOKEN_KEY, token);
-  localStorage.setItem(STORAGE_WORKER_KEY, worker);
-  document.getElementById('login-overlay').classList.add('hidden');
-  loadData();
-}
-
-function showLoginError(msg) {
-  const el = document.getElementById('login-error');
-  el.textContent = msg;
-  el.style.display = 'block';
-  document.getElementById('login-btn').disabled = false;
-}
-
-function doLogout() {
-  localStorage.removeItem(STORAGE_TOKEN_KEY);
-  localStorage.removeItem(STORAGE_WORKER_KEY);
-  document.getElementById('token-input').value = '';
-  document.getElementById('login-btn').disabled = false;
-  document.getElementById('login-error').style.display = 'none';
-  document.getElementById('login-overlay').classList.remove('hidden');
-}
-
-// ═══════════════════════════════════════════════════════
-//  NOTION FETCH — paginate through all results
-// ═══════════════════════════════════════════════════════
-async function fetchAllPages() {
-  const token = localStorage.getItem(STORAGE_TOKEN_KEY);
-  const workerBase = localStorage.getItem(STORAGE_WORKER_KEY);
-  const url = `${workerBase}/v1/databases/${DB_ID}/query`;
-
-  let allResults = [];
-  let cursor = undefined;
-  let pageCount = 0;
-
-  do {
-    const body = { page_size: 100 };
-    if (cursor) body.start_cursor = cursor;
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Notion-Version': '2022-06-28',
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || `HTTP ${res.status}`);
+  // Re-init Notion with new DB
+  allCandidates = [];
+  if (role.dbId) {
+    const section = document.getElementById('candidates-section');
+    if (section) section.style.display = 'none';
+    fetchAllCandidatesForRole(role.dbId);
+  } else {
+    // No DB yet — show placeholder
+    const section = document.getElementById('candidates-section');
+    if (section) {
+      section.style.display = 'block';
+      const tbody = document.getElementById('candidates-tbody');
+      if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--muted);">📋 Notion database not configured yet for this role.<br><span style="font-size:10px;">Add the DB ID in the ROLES config to connect it.</span></td></tr>`;
+      const ct = document.getElementById('cand-count');
+      if (ct) ct.textContent = '';
     }
-
-    const data = await res.json();
-    allResults = allResults.concat(data.results || []);
-    pageCount += (data.results || []).length;
-    document.getElementById('loading-count').textContent = `${pageCount} candidates loaded…`;
-    cursor = data.has_more ? data.next_cursor : undefined;
-  } while (cursor);
-
-  return allResults;
-}
-
-// ═══════════════════════════════════════════════════════
-//  PROPERTY HELPERS
-// ═══════════════════════════════════════════════════════
-function getPropValue(page, propName) {
-  const props = page.properties;
-  // Case-insensitive lookup
-  const key = Object.keys(props).find(k => k.toLowerCase().trim() === propName.toLowerCase().trim()) || propName;
-  const prop = props[key];
-  if (!prop) return null;
-
-  switch (prop.type) {
-    case 'select':     return prop.select?.name || null;
-    case 'multi_select': return prop.multi_select?.map(s => s.name) || [];
-    case 'checkbox':   return prop.checkbox;
-    case 'title':      return prop.title?.map(t => t.plain_text).join('') || '';
-    case 'rich_text':  return prop.rich_text?.map(t => t.plain_text).join('') || '';
-    case 'phone_number': return prop.phone_number || '';
-    case 'email':      return prop.email || '';
-    case 'date':       return prop.date?.start || null;
-    case 'number':     return prop.number;
-    case 'url':        return prop.url || '';
-    default:           return null;
   }
 }
 
-function getText(page, propName) {
-  const v = getPropValue(page, propName);
-  if (typeof v === 'string') return v;
-  if (Array.isArray(v)) return v.join(', ');
-  return '';
-}
-
-function isTruthy(page, propName) {
-  const v = getPropValue(page, propName);
-  if (v === true) return true;
-  if (typeof v === 'string') return v.trim().length > 0 && v.toLowerCase() !== 'no' && v.toLowerCase() !== 'false';
-  if (Array.isArray(v)) return v.length > 0;
-  return false;
-}
-
-// Stage groupings
-// Stage values come directly from Notion — no hardcoded guesses
-
 // ═══════════════════════════════════════════════════════
-//  COMPUTE METRICS
+//  WEEK SELECTOR
 // ═══════════════════════════════════════════════════════
-function computeMetrics(pages) {
-  const total = pages.length;
-
-  // ── TIER ─────────────────────────────────────────────
-  // Actual values: "Tier 1 Dream", "Tier 2 Strong Adjacent", "Tier 3 High Potential", "Out"
-  const tierCounts = {};
-  pages.forEach(p => {
-    const tier = getText(p, 'Tier');
-    if (tier) tierCounts[tier] = (tierCounts[tier] || 0) + 1;
+function switchWeek(week) {
+  currentWeek = week;
+  document.querySelectorAll('.week-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.week) === week);
   });
-  const sumTier = (fn) => Object.entries(tierCounts).filter(([k]) => fn(k.toLowerCase())).reduce((s, [,v]) => s + v, 0);
-  const t1 = sumTier(k => k.includes('tier 1') || k === '1' || k === 't1');
-  const t2 = sumTier(k => k.includes('tier 2') || k === '2' || k === 't2');
-  const t3 = sumTier(k => k.includes('tier 3') || k === '3' || k === 't3');
-  const tOut = sumTier(k => k === 'out' || k === 'filtered out' || k === 'not relevant');
-  // In pipeline = has a Tier that is NOT "Out"
-  const tieredTotal = t1 + t2 + t3;
-
-  // ── STAGE (if exists) ─────────────────────────────────
-  const stageCounts = {};
-  pages.forEach(p => {
-    const stage = getText(p, 'Stage');
-    if (stage) stageCounts[stage] = (stageCounts[stage] || 0) + 1;
-  });
-
-  // ── INTERVIEW column ──────────────────────────────────
-  // "Interview" is its own column showing interview phase
-  const interviewPages = pages.filter(p => {
-    const iv = getText(p, 'Interview');
-    return iv && iv.trim().length > 0;
-  });
-  const interviewCount = interviewPages.length;
-
-  // ── OUTREACH / REPLIES ────────────────────────────────
-  // Use Tier as proxy for outreach (anyone with a tier was reached out to)
-  const outreachCount = pages.filter(p => {
-    const t = getText(p, 'Tier');
-    return t && t.toLowerCase() !== 'out' && t.trim().length > 0;
-  }).length;
-
-  // Replied = Reply field is set and not empty/negative
-  const repliedCount = pages.filter(p => {
-    const reply = getText(p, 'Reply');
-    return reply && reply.trim() !== '' && !['no reply','no response','not replied','—','-','no'].includes(reply.toLowerCase());
-  }).length;
-
-  // Completed / advanced — based on Interview field having a later-stage value
-  const completedCount = interviewPages.filter(p => {
-    const iv = getText(p, 'Interview').toLowerCase();
-    return iv.includes('complet') || iv.includes('2nd') || iv.includes('offer') || iv.includes('hired');
-  }).length;
-  const advancedCount = completedCount;
-
-  // ── CONNECTION / MESSAGE SEEN ─────────────────────────
-  const connAccepted = pages.filter(p => isTruthy(p, 'Connection Accepted')).length;
-  const msgSeen      = pages.filter(p => isTruthy(p, 'Message Seen')).length;
-
-  // ── LUSHA DATA ────────────────────────────────────────
-  const hasEmail = pages.filter(p => getText(p, '(Lusha) Work email').length > 0).length;
-  const hasPhone = pages.filter(p => getText(p, '(Lusha) Phone number 1').length > 0).length;
-  const hasPhone2 = pages.filter(p => getText(p, '(Lusha) Phone number 2').length > 0).length;
-
-  // ── CALL ATTEMPTS ─────────────────────────────────────
-  // Call? is a date field — count non-empty = called
-  const calledCount = pages.filter(p => {
-    const v = getPropValue(p, 'Call?');
-    if (v === true) return true;
-    if (typeof v === 'string') return v.trim().length > 0;
-    return false;
-  }).length;
-
-  // ── REPLY BREAKDOWN ───────────────────────────────────
-  const replyCounts = {};
-  pages.forEach(p => {
-    const r = getText(p, 'Reply');
-    const key = r && r.trim().length > 0 ? r : 'No Reply';
-    replyCounts[key] = (replyCounts[key] || 0) + 1;
-  });
-
-  // ── SOURCE CHANNELS ───────────────────────────────────
-  const sourceCounts = {};
-  pages.forEach(p => {
-    const s = getText(p, 'Source Channel');
-    const key = s && s.trim().length > 0 ? s : 'Unknown';
-    sourceCounts[key] = (sourceCounts[key] || 0) + 1;
-  });
-
-  // ── SOURCE COMPANIES (current employer) ───────────────
-  const companyCounts = {};
-  pages.forEach(p => {
-    const s = getText(p, 'Source Company');
-    if (s && s.trim().length > 0) companyCounts[s] = (companyCounts[s] || 0) + 1;
-  });
-
-  // ── CURRENT ROLES ─────────────────────────────────────
-  const roleCounts = {};
-  pages.forEach(p => {
-    const r = getText(p, 'Current Role');
-    if (r && r.trim().length > 0) roleCounts[r] = (roleCounts[r] || 0) + 1;
-  });
-
-  // ── INTERVIEW CANDIDATE NAMES ─────────────────────────
-  const interviewNames = interviewPages.map(p => {
-    const first = getText(p, 'Name') || getText(p, 'First Name');
-    const last  = getText(p, 'Last Name') || getText(p, 'Surname');
-    const phase = getText(p, 'Interview');
-    const name = [first, last].filter(Boolean).join(' ') || '(unnamed)';
-    return { name, phase, pageId: p.id };
-  });
-
-  const replyRate = outreachCount > 0 ? Math.round((repliedCount / outreachCount) * 100) : 0;
-
-  return {
-    total, tieredTotal, t1, t2, t3, tOut,
-    calledCount, hasPhone2, roleCounts,
-    outreachCount, repliedCount, replyRate,
-    interviewCount, completedCount, advancedCount,
-    connAccepted, msgSeen, hasEmail, hasPhone,
-    stageCounts, replyCounts, sourceCounts, companyCounts, roleCounts,
-    interviewNames,
-  };
+  // Only re-render static numbers for AE; other roles use live data
+  if (currentRole === 'ae') renderDashboard(WEEK_DATA[week]);
 }
 
 // ═══════════════════════════════════════════════════════
-//  RENDER
+//  HELPERS
 // ═══════════════════════════════════════════════════════
-function fmt(n) { return n.toLocaleString(); }
+function fmt(n) { return (n || 0).toLocaleString(); }
 function pct(n, total) { return total > 0 ? Math.round((n / total) * 100) : 0; }
+function set(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+function setWidth(id, p) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = Math.min(p || 0, 100) + '%';
+}
 
-function renderMetrics(m) {
-  // KPI strip
-  set('kpi-shortlisted', fmt(m.tieredTotal));
-  set('kpi-outreach', fmt(m.outreachCount));
-  set('kpi-connections', fmt(m.calledCount));
-  set('kpi-replied', fmt(m.repliedCount));
-  set('kpi-interviews', fmt(m.interviewCount));
-  set('kpi-replyrate', m.replyRate + '%');
+// ═══════════════════════════════════════════════════════
+//  RENDER DASHBOARD
+// ═══════════════════════════════════════════════════════
+function renderDashboard(d) {
+  const tieredTotal = d.t1 + d.t2 + d.t3;
+  const tierBase = tieredTotal || 1;
 
-  // Shortlist card
-  set('sl-total', fmt(m.total));
-  set('sl-tiered', fmt(m.tieredTotal) + ' in pipeline');
-  set('sl-out', fmt(m.tOut) + ' marked Out');
+  // KPI Strip
+  set('kpi-total', fmt(d.total));
+  set('kpi-outreach', fmt(d.outreach));
+  set('kpi-replied', fmt(d.replied));
+  set('kpi-calls', fmt(d.called));
+  set('kpi-interviews', fmt(d.interviews.length));
 
-  const tierBase = m.tieredTotal || 1;
-  const t1p = pct(m.t1, tierBase);
-  const t2p = pct(m.t2, tierBase);
-  const t3p = pct(m.t3, tierBase);
-  set('sl-t1', `${fmt(m.t1)} <span class="bar-sub">${t1p}%</span>`);
-  set('sl-t2', `${fmt(m.t2)} <span class="bar-sub">${t2p}%</span>`);
-  set('sl-t3', `${fmt(m.t3)} <span class="bar-sub">${t3p}%</span>`);
+  // Shortlist
+  set('sl-total', fmt(d.total));
+  set('sl-tiered', '');
+  set('sl-out', '');
+  const t1p = pct(d.t1, tierBase), t2p = pct(d.t2, tierBase), t3p = pct(d.t3, tierBase);
+  set('sl-t1', `${fmt(d.t1)} <span class="bar-sub">${t1p}%</span>`);
+  set('sl-t2', `${fmt(d.t2)} <span class="bar-sub">${t2p}%</span>`);
+  set('sl-t3', `${fmt(d.t3)} <span class="bar-sub">${t3p}%</span>`);
   setWidth('sl-t1-bar', t1p);
   setWidth('sl-t2-bar', t2p);
   setWidth('sl-t3-bar', t3p);
 
-  const emailPct = pct(m.hasEmail, m.total);
-  const phonePct = pct(m.hasPhone, m.total);
-  const phone2Pct = pct(m.hasPhone2, m.total);
-  const calledPct = pct(m.calledCount, m.total);
+  // Outreach Coverage
+  set('out-called', `${fmt(d.called)} <span class="bar-sub">${pct(d.called, d.total)}%</span>`);
+  set('out-conn', `${fmt(d.connAccepted)} <span class="bar-sub">${d.connAcceptedPct}%</span>`);
+  setWidth('out-called-bar', pct(d.called, d.total));
+  setWidth('out-conn-bar', d.connAcceptedPct);
+  set('out-email', d.hasEmail ? fmt(d.hasEmail) : '<span style="color:var(--muted);font-weight:400">—</span>');
+  set('out-phone', d.hasPhone ? fmt(d.hasPhone) : '<span style="color:var(--muted);font-weight:400">—</span>');
+  setWidth('out-email-bar', pct(d.hasEmail, d.total));
+  setWidth('out-phone-bar', pct(d.hasPhone, d.total));
 
-  set('out-accepted', `${fmt(m.calledCount)} <span class="bar-sub">${calledPct}%</span>`);
-  set('out-seen',     `${fmt(m.connAccepted)} <span class="bar-sub">${pct(m.connAccepted, m.total)}%</span>`);
-  set('out-email',    `${fmt(m.hasEmail)} <span class="bar-sub">${emailPct}%</span>`);
-  set('out-phone',    `${fmt(m.hasPhone)} <span class="bar-sub">${phonePct}%</span>`);
-  setWidth('out-accepted-bar', calledPct);
-  setWidth('out-seen-bar', pct(m.connAccepted, m.total));
-  setWidth('out-email-bar', emailPct);
-  setWidth('out-phone-bar', phonePct);
-
-  // Reply breakdown
-  const replyEl = document.getElementById('reply-breakdown');
-  replyEl.innerHTML = Object.entries(m.replyCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([k, v]) => barRow(k, v, m.total, replyColor(k)))
-    .join('') || '<div class="tba">No reply data</div>';
-
-  // Call breakdown — simple count
-  const callEl = document.getElementById('call-breakdown');
-  const notCalled = m.total - m.calledCount;
-  callEl.innerHTML = m.calledCount > 0
-    ? barRow('Called', m.calledCount, m.total, 'var(--green)') +
-      barRow('Not yet called', notCalled, m.total, 'var(--muted)')
-    : '<div class="tba">No call data</div>';
-
-  // Stage breakdown
-  const stageEl = document.getElementById('stage-breakdown');
-  stageEl.innerHTML = Object.entries(m.stageCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([k, v]) => barRow(k, v, m.total, stageColor(k)))
-    .join('') || '<div class="tba">No stage data</div>';
+  // Pipeline Progress
+  const pipeStages = [
+    { label: 'Identified',    val: d.total,          p: 100,             color: 'var(--spirulina)' },
+    { label: 'Outreach Sent', val: d.outreach,        p: d.outreachPct,   color: 'var(--green)' },
+    { label: 'Not Started',   val: d.notStarted,      p: d.notStartedPct, color: 'var(--muted)' },
+    { label: 'Replied',       val: d.replied,         p: d.repliedPct,    color: 'var(--bubble)' },
+    { label: 'Not Interested',val: d.notInterested,   p: d.notInterestedPct, color: '#B5908A' },
+  ];
+  document.getElementById('pipeline-progress').innerHTML = pipeStages.map(s =>
+    `<div class="bar-row">
+      <div class="bar-meta">
+        <span class="bar-label">${s.label}</span>
+        <span class="bar-value" style="color:${s.color}">${fmt(s.val)} <span class="bar-sub">${s.p}%</span></span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${s.p}%;background:${s.color}"></div></div>
+    </div>`
+  ).join('') || '<div class="tba">No data</div>';
 
   // Interviews
-  set('int-scheduled', fmt(m.interviewCount));
-  set('int-completed', fmt(m.completedCount));
-  set('int-advanced', fmt(m.advancedCount));
-  const intListEl = document.getElementById('interview-list');
-  if (m.interviewNames.length) {
-    intListEl.innerHTML = m.interviewNames.map(({ name, phase, pageId }) =>
-      `<div class="interview-highlight" style="display:flex;justify-content:space-between;align-items:center;">
-        <a class="cand-name-link" href="#" onclick="openCandidate('${pageId}');return false;">${name}</a>
-        ${phase ? `<span style="font-size:10px;color:var(--muted);margin-left:8px;">${phase}</span>` : ''}
-      </div>`
-    ).join('');
-  } else {
-    intListEl.innerHTML = '<div class="tba">No interviews yet</div>';
-  }
+  set('int-total', fmt(d.interviews.length));
+  set('int-dropped', fmt(d.interviews.filter(i => i.phase === 'Dropped').length));
+  document.getElementById('interview-list').innerHTML = d.interviews.length
+    ? d.interviews.map(({ name, phase, pageId }) => {
+        const isClickable = name !== '—' && pageId;
+        const clickAttr = isClickable ? `onclick="openCandidate('${pageId}')" style="cursor:pointer;"` : '';
+        const nameStyle = isClickable
+          ? 'font-weight:600;color:var(--green);text-decoration:underline dotted;'
+          : 'font-weight:600;color:var(--spirulina);';
+        const phaseColor = phase === 'Dropped' ? 'var(--bubble)' : 'var(--green)';
+        return `<div class="interview-highlight" ${clickAttr} style="display:flex;justify-content:space-between;align-items:center;${isClickable?'':''}">
+          <span style="${nameStyle}">${name}</span>
+          <span style="font-size:10px;color:${phaseColor};">${phase}</span>
+        </div>`;
+      }).join('')
+    : '<div class="tba">No interviews yet</div>';
 
-  // Source total
-  set('source-total', fmt(m.total));
-  set('footer-total', fmt(m.total));
+  // Headhunters
+  document.getElementById('headhunters-list').innerHTML = d.headhunters.map(h => {
+    const namedCandidates = h.candidates.filter(c => (typeof c === 'string' ? c : c.name) !== '—');
+    const namesHtml = namedCandidates.length
+      ? namedCandidates.map(c => {
+          const name  = typeof c === 'string' ? c : c.name;
+          const phase = typeof c === 'string' ? '' : c.phase;
+          const pid   = typeof c === 'string' ? null : c.pageId;
+          const isDropped = phase.toLowerCase().includes('drop');
+          const color = isDropped ? 'var(--bubble)' : 'var(--green)';
+          const clickFn = pid
+            ? `openCandidate('${pid}')`
+            : `openStaticPanel(${JSON.stringify(name)}, ${JSON.stringify({ headhunter: h.name, phase })})`;
+          return `<span onclick="${clickFn}" style="cursor:pointer;color:${color};text-decoration:underline dotted;font-weight:600;">${name}</span>`;
+        }).join('<span style="color:var(--paper2);"> · </span>')
+      : '<span style="color:var(--paper2);">No candidates yet</span>';
+    return `
+    <div style="margin-bottom:13px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+        <span style="font-size:12px;font-weight:700;color:var(--spirulina);">${h.name}</span>
+        <span style="font-size:16px;font-weight:900;color:${h.count > 0 ? 'var(--green)' : 'var(--muted)'};">${h.count}</span>
+      </div>
+      <div style="font-size:10px;margin-bottom:4px;line-height:1.7;">${namesHtml}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.min(h.count * 20, 100)}%;background:var(--green);"></div></div>
+    </div>`;
+  }).join('');
 
   // Funnel
-  renderFunnel(m);
+  renderFunnel(d);
 
   // Charts
-  renderTierChart(m);
-  renderSourceChart(m);
+  renderTierChart(d);
+  renderSourceChart(d);
 
-  // Last updated
-  const now = new Date();
-  set('last-updated', `Updated ${now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`);
+  // Footer
+  set('footer-total', fmt(d.total));
 }
 
-function barRow(label, value, total, color) {
-  const p = pct(value, total);
-  return `
-    <div class="bar-row">
-      <div class="bar-meta">
-        <span class="bar-label">${label}</span>
-        <span class="bar-value" style="color:${color}">${fmt(value)} <span class="bar-sub">${p}%</span></span>
-      </div>
-      <div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${color}"></div></div>
-    </div>`;
-}
-
-function replyColor(key) {
-  const k = key.toLowerCase();
-  if (k.includes('positive') || k.includes('interested') || k.includes('yes')) return 'var(--green)';
-  if (k.includes('negative') || k.includes('not interested') || k.includes('no interest')) return 'var(--bubble)';
-  return 'var(--muted)';
-}
-
-function stageColor(key) {
-  const k = key.toLowerCase();
-  if (k.includes('interview') || k.includes('scheduled')) return 'var(--green)';
-  if (k.includes('replied')) return 'var(--accent)';
-  if (k.includes('outreach') || k.includes('sent')) return '#2A4A35';
-  if (k.includes('not interested') || k.includes('out')) return 'var(--bubble)';
-  return 'var(--muted)';
-}
-
-function renderFunnel(m) {
+// ═══════════════════════════════════════════════════════
+//  FUNNEL (no conversion %)
+// ═══════════════════════════════════════════════════════
+function renderFunnel(d) {
+  const tieredTotal = d.t1 + d.t2 + d.t3;
   const steps = [
-    { label: 'In DB',      value: m.total,          color: '#2A4A35' },
-    { label: 'Tiered',     value: m.tieredTotal,     color: '#12331F' },
-    { label: 'Outreach',   value: m.outreachCount,   color: '#00712D' },
-    { label: 'Connections',value: m.connAccepted,    color: '#6FED6D' },
-    { label: 'Replied',    value: m.repliedCount,    color: '#E26A9E' },
-    { label: 'Interview',  value: m.interviewCount,  color: '#00712D' },
+    { label: 'Total',          value: d.total,           color: '#2A4A35' },
+    { label: 'Tiered',         value: tieredTotal,       color: '#12331F' },
+    { label: 'Outreach',       value: d.outreach,        color: '#00712D' },
+    { label: 'Connections',    value: d.connAccepted,    color: '#6FED6D' },
+    { label: 'Replied',        value: d.replied,         color: '#E26A9E' },
+    { label: 'Interviews',     value: d.interviews.length, color: '#00712D' },
   ].filter(s => s.value > 0);
 
   const container = document.getElementById('funnel');
   container.innerHTML = '';
-  const maxVal = steps[0]?.value || 1;
+  if (!steps.length) { container.innerHTML = '<div class="tba" style="width:100%;align-self:center;">No data</div>'; return; }
+  const maxVal = steps[0].value;
 
-  steps.forEach((step, i) => {
-    const h = Math.max(12, Math.round((step.value / maxVal) * 90));
-    const conv = i > 0 && steps[i-1].value > 0 ? Math.round((step.value / steps[i-1].value) * 100) + '%' : null;
+  steps.forEach(step => {
+    const h = Math.max(14, Math.round((step.value / maxVal) * 90));
     const col = document.createElement('div');
     col.className = 'funnel-col';
     col.innerHTML = `
       <div class="funnel-num" style="color:${step.color}">${fmt(step.value)}</div>
       <div class="funnel-bar" style="height:${h}px;background:${step.color}"></div>
       <div class="funnel-lbl">${step.label}</div>
-      ${conv ? `<div class="funnel-conv">${conv}</div>` : ''}
     `;
     container.appendChild(col);
   });
 }
 
-function renderTierChart(m) {
+// ═══════════════════════════════════════════════════════
+//  CHARTS
+// ═══════════════════════════════════════════════════════
+function renderTierChart(d) {
   const ctx = document.getElementById('tierChart').getContext('2d');
   if (tierChartInstance) tierChartInstance.destroy();
-
-  // Collect all tier keys
-  const labels = [], data = [], colors = [];
-  if (m.t1) { labels.push('T1 Dream'); data.push(m.t1); colors.push('#E26A9E'); }
-  if (m.t2) { labels.push('T2 Strong'); data.push(m.t2); colors.push('#00712D'); }
-  if (m.t3) { labels.push('T3 High-Pot'); data.push(m.t3); colors.push('#6FED6D'); }
-
+  const rows = [
+    { label: 'T1 Dream',      val: d.t1, color: '#E26A9E' },
+    { label: 'T2 Strong',     val: d.t2, color: '#00712D' },
+    { label: 'T3 High-Pot',   val: d.t3, color: '#6FED6D' },
+  ].filter(r => r.val > 0);
   tierChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels,
-      datasets: [{ data, backgroundColor: colors, borderRadius: 2 }]
+      labels: rows.map(r => r.label),
+      datasets: [{ data: rows.map(r => r.val), backgroundColor: rows.map(r => r.color), borderRadius: 2 }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
@@ -1095,18 +955,17 @@ function renderTierChart(m) {
   });
 }
 
-function renderSourceChart(m) {
+function renderSourceChart(d) {
   const ctx = document.getElementById('sourceChart').getContext('2d');
   if (sourceChartInstance) sourceChartInstance.destroy();
-
-  const sorted = Object.entries(m.sourceCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const sorted = Object.entries(d.sourceCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  if (!sorted.length) return;
   const palette = ['#12331F', '#00712D', '#2A4A35', '#E26A9E', '#6FED6D', '#F0E8DA'];
-
   sourceChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: sorted.map(([k]) => k),
-      datasets: [{ data: sorted.map(([,v]) => v), backgroundColor: palette, borderRadius: 2 }]
+      datasets: [{ data: sorted.map(([, v]) => v), backgroundColor: palette.slice(0, sorted.length), borderRadius: 2 }]
     },
     options: {
       indexAxis: 'y',
@@ -1118,229 +977,374 @@ function renderSourceChart(m) {
       }
     }
   });
+  set('source-total', fmt(sorted.reduce((s, [, v]) => s + v, 0)));
 }
 
 // ═══════════════════════════════════════════════════════
-//  LOAD DATA
+//  LIVE KPI COMPUTATION FROM NOTION
 // ═══════════════════════════════════════════════════════
-async function loadData() {
-  const loadingEl = document.getElementById('loading-overlay');
-  loadingEl.classList.remove('hidden');
-  document.getElementById('loading-count').textContent = '';
+//  Lemlist field mapping:
+//    Email Sent (1st)    — checkbox     → outreach sent
+//    Connection Accepted — checkbox     → LinkedIn connection accepted
+//    Follow-Up Linkedin  — multi-select → "Yes" | "No (booked)" | "No (answered & removed)"
+//    Email Follow-Up     — multi-select → same options
+//    Call?               — date field   → call was booked/happened
 
-  try {
-    const pages = await fetchAllPages();
-    window.allPages = pages;
+function getMultiSelectValues(page, key) {
+  const p = page.properties?.[key];
+  if (!p || p.type !== 'multi_select') return [];
+  return (p.multi_select || []).map(s => s.name);
+}
 
-    const metrics = computeMetrics(pages);
-    renderMetrics(metrics);
-    renderCandidatesTable(pages);
-  } catch (err) {
-    alert('Error loading data: ' + err.message + '\n\nCheck your token and worker URL.');
-    doLogout();
-  } finally {
-    loadingEl.classList.add('hidden');
+function hasDateValue(page, key) {
+  const p = page.properties?.[key];
+  return !!(p && p.type === 'date' && p.date?.start);
+}
+
+function computeKPIsFromNotion(pages) {
+  const total = pages.length;
+
+  // Tier counts
+  let t1 = 0, t2 = 0, t3 = 0;
+  pages.forEach(p => {
+    const tier = getProp(p, ' Tier');
+    if      (tier.includes('1') || tier.toLowerCase().includes('dream'))  t1++;
+    else if (tier.includes('2') || tier.toLowerCase().includes('strong')) t2++;
+    else if (tier.includes('3') || tier.toLowerCase().includes('high'))   t3++;
+  });
+
+  // Outreach sent: Email Sent (1st) checkbox is checked
+  const outreach = pages.filter(p => getProp(p, 'Email Sent (1st)') === '✓').length;
+
+  // LinkedIn connections accepted
+  const connAccepted = pages.filter(p => getProp(p, 'Connection Accepted') === '✓').length;
+
+  // Replied: any channel has a "No (...)" value — means they responded and exited the sequence
+  function hasReplied(p) {
+    return [
+      ...getMultiSelectValues(p, 'Follow-Up Linkedin'),
+      ...getMultiSelectValues(p, 'Email Follow-Up'),
+    ].some(v => v.startsWith('No ('));
+  }
+  const replied = pages.filter(hasReplied).length;
+
+  // Not interested specifically: "No (answered & removed)"
+  const notInterested = pages.filter(p => [
+    ...getMultiSelectValues(p, 'Follow-Up Linkedin'),
+    ...getMultiSelectValues(p, 'Email Follow-Up'),
+  ].includes('No (answered & removed)')).length;
+
+  // Calls: Call? date field has a value
+  const called = pages.filter(p => hasDateValue(p, 'Call?')).length;
+
+  // Not yet contacted
+  const notStarted = total - outreach;
+
+  // Source channel breakdown for chart
+  const sourceCounts = {};
+  pages.forEach(p => {
+    const src = getProp(p, ' Source Channel');
+    if (src) sourceCounts[src] = (sourceCounts[src] || 0) + 1;
+  });
+
+  // Lusha contact info
+  const hasEmail = pages.filter(p =>
+    getProp(p, '(Lusha) Work email') || getProp(p, ' Email')
+  ).length;
+  const hasPhone = pages.filter(p => getProp(p, '(Lusha) Phone number 1')).length;
+
+  // Interviews — live from Notion Interview field
+  const interviews = pages
+    .filter(p => getProp(p, 'Interview').trim() !== '')
+    .map(p => ({ name: candidateName(p), phase: getProp(p, 'Interview'), pageId: p.id }));
+
+  return {
+    label: 'Live',
+    total, t1, t2, t3,
+    outreach,
+    outreachPct:      pct(outreach,      total),
+    notStarted,
+    notStartedPct:    pct(notStarted,    total),
+    replied,
+    repliedPct:       pct(replied,       total),
+    notInterested,
+    notInterestedPct: pct(notInterested, total),
+    called,
+    connAccepted,
+    connAcceptedPct:  pct(connAccepted,  total),
+    hasEmail,
+    hasPhone,
+    interviews,
+    sourceCounts,
+    // Headhunter card stays manually curated until a per-headhunter field exists in Notion
+    headhunters: WEEK_DATA[3].headhunters,
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  NOTION LIVE DATA
+// ═══════════════════════════════════════════════════════
+const NOTION_DB_ID = '37b8d34b2601804b91cec3dc8dc4456f';
+let notionToken = '';
+let workerUrl   = '';
+let allCandidates = [];
+
+function initNotion() {
+  notionToken = localStorage.getItem('notionToken') || '';
+  workerUrl   = localStorage.getItem('workerUrl')   || 'https://royal-art-1c50.elif-e6e.workers.dev';
+  if (notionToken && workerUrl) {
+    fetchAllCandidatesForRole(ROLES[currentRole].dbId);
+  } else {
+    const banner = document.getElementById('notion-banner');
+    if (banner) { banner.style.display = 'flex'; banner.style.flexWrap = 'wrap'; }
+    if (workerUrl) document.getElementById('worker-url-input').value = workerUrl;
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  UTIL
-// ═══════════════════════════════════════════════════════
-function set(id, html) {
-  const el = document.getElementById(id);
-  if (el) el.innerHTML = html;
-}
-function setWidth(id, pct) {
-  const el = document.getElementById(id);
-  if (el) el.style.width = Math.min(pct, 100) + '%';
-}
-
-// ═══════════════════════════════════════════════════════
-//  TIER HELPERS
-// ═══════════════════════════════════════════════════════
-function tierPill(tier) {
-  if (!tier) return '<span style="color:var(--muted);font-size:10px;">—</span>';
-  const t = tier.toLowerCase();
-  let bg, color;
-  if (t.includes('tier 1'))      { bg = '#E26A9E'; color = '#fff'; }
-  else if (t.includes('tier 2')) { bg = '#00712D'; color = '#fff'; }
-  else if (t.includes('tier 3')) { bg = '#2A4A35'; color = '#6FED6D'; }
-  else if (t === 'out')          { bg = '#F0E8DA'; color = '#2A4A35'; }
-  else                           { bg = '#F0E8DA'; color = '#2A4A35'; }
-  const label = t.includes('tier 1') ? 'T1' : t.includes('tier 2') ? 'T2' : t.includes('tier 3') ? 'T3' : tier;
-  return `<span class="tier-pill" style="background:${bg};color:${color};">${label}</span>`;
+function connectNotion() {
+  const t = document.getElementById('notion-token-input').value.trim();
+  const w = document.getElementById('worker-url-input').value.trim();
+  if (!t || !w) return alert('Please enter both the token and worker URL.');
+  notionToken = t; workerUrl = w;
+  localStorage.setItem('notionToken', t);
+  localStorage.setItem('workerUrl', w);
+  document.getElementById('notion-banner').style.display = 'none';
+  fetchAllCandidatesForRole(ROLES[currentRole].dbId);
 }
 
-function getCandName(page) {
-  const first = getText(page, 'Name') || getText(page, 'First Name');
-  const last  = getText(page, 'Last Name') || getText(page, 'Surname');
-  return [first, last].filter(Boolean).join(' ') || '(unnamed)';
+async function notionQueryDb(dbId, startCursor) {
+  const body = { page_size: 100 };
+  if (startCursor) body.start_cursor = startCursor;
+  const res = await fetch(`${workerUrl}/v1/databases/${dbId}/query`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${notionToken}`, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return res.json();
 }
 
-// ═══════════════════════════════════════════════════════
-//  CANDIDATES TABLE
-// ═══════════════════════════════════════════════════════
-let currentFilter = 'all';
+async function fetchAllCandidatesForRole(dbId) {
+  if (!dbId) return;
+  const statusEl = document.getElementById('cand-count');
+  const section  = document.getElementById('candidates-section');
+  section.style.display = 'block';
+  if (statusEl) statusEl.textContent = 'Loading…';
+
+  try {
+    let results = [], cursor = null, hasMore = true;
+    while (hasMore) {
+      const data = await notionQueryDb(dbId, cursor);
+      if (data.results) results = results.concat(data.results);
+      hasMore = data.has_more;
+      cursor  = data.next_cursor;
+      if (statusEl) statusEl.textContent = `${results.length} loaded…`;
+    }
+    allCandidates = results;
+    // Compute all KPIs live from Notion and re-render the full dashboard
+    const liveData = computeKPIsFromNotion(results);
+    renderDashboard(liveData);
+    renderCandidatesTable(results);
+    // Mark week badge as live
+    const wb = document.querySelector('.week-badge');
+    if (wb) { wb.textContent = 'LIVE'; wb.style.background = 'var(--bubble)'; }
+    if (statusEl) statusEl.textContent = `${results.length} candidates`;
+  } catch(e) {
+    if (statusEl) statusEl.textContent = 'Error loading — check token';
+    console.error(e);
+  }
+}
+
+function getProp(page, key) {
+  const props = page.properties || {};
+  const p = props[key];
+  if (!p) return '';
+  if (p.type === 'title')        return (p.title || []).map(t => t.plain_text).join('');
+  if (p.type === 'rich_text')    return (p.rich_text || []).map(t => t.plain_text).join('');
+  if (p.type === 'select')       return p.select?.name || '';
+  if (p.type === 'multi_select') return (p.multi_select || []).map(s => s.name).join(', ');
+  if (p.type === 'checkbox')     return p.checkbox ? '✓' : '';
+  if (p.type === 'url')          return p.url || '';
+  if (p.type === 'email')        return p.email || '';
+  if (p.type === 'phone_number') return p.phone_number || '';
+  if (p.type === 'date')         return p.date?.start || '';
+  if (p.type === 'number')       return p.number != null ? String(p.number) : '';
+  return '';
+}
+
+function tierColor(tier) {
+  if (!tier) return 'var(--muted)';
+  if (tier.includes('1') || tier.toLowerCase().includes('dream')) return 'var(--bubble)';
+  if (tier.includes('2') || tier.toLowerCase().includes('strong')) return 'var(--green)';
+  if (tier.includes('3') || tier.toLowerCase().includes('high')) return 'var(--accent)';
+  return 'var(--muted)';
+}
+
+function candidateName(p) {
+  const first = getProp(p, 'Name');
+  const last  = getProp(p, ' Last Name');
+  return [first, last].filter(Boolean).join(' ') || '—';
+}
 
 function renderCandidatesTable(pages) {
   const tbody = document.getElementById('candidates-tbody');
   if (!tbody) return;
-  if (!pages || pages.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:var(--muted);">No candidates found.</td></tr>';
-    return;
-  }
+  if (!pages.length) { tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);">No candidates found</td></tr>'; return; }
 
-  let filtered = pages;
-  if (currentFilter === 'tier1')     filtered = pages.filter(p => getText(p,'Tier').toLowerCase().includes('tier 1'));
-  else if (currentFilter === 'tier2') filtered = pages.filter(p => getText(p,'Tier').toLowerCase().includes('tier 2'));
-  else if (currentFilter === 'tier3') filtered = pages.filter(p => getText(p,'Tier').toLowerCase().includes('tier 3'));
-  else if (currentFilter === 'interview') filtered = pages.filter(p => getText(p,'Interview').trim().length > 0);
-  else if (currentFilter === 'out')   filtered = pages.filter(p => getText(p,'Tier').toLowerCase() === 'out');
-
-  document.getElementById('candidates-count').textContent = `${filtered.length} of ${pages.length} candidates shown`;
-
-  tbody.innerHTML = filtered.map(page => {
-    const name    = getCandName(page);
-    const company = getText(page, 'Source Company');
-    const role    = getText(page, 'Current Role');
-    const tier    = getText(page, 'Tier');
-    const stage   = getText(page, 'Stage');
-    const reply   = getText(page, 'Reply');
-    const iv      = getText(page, 'Interview');
-    const pid     = page.id;
-
-    return `<tr onclick="openCandidate('${pid}')">
-      <td><a class="cand-name-link" href="#" onclick="openCandidate('${pid}');return false;">${name}</a></td>
-      <td style="color:var(--muted);">${company || '—'}</td>
-      <td style="color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${role || '—'}</td>
-      <td>${tierPill(tier)}</td>
-      <td style="color:var(--muted);">${stage || '—'}</td>
-      <td style="color:var(--muted);">${reply || '—'}</td>
-      <td>${iv ? `<span style="color:var(--green);font-size:10px;font-weight:600;">${iv}</span>` : '<span style="color:var(--paper2);">—</span>'}</td>
+  tbody.innerHTML = pages.map(p => {
+    const name      = candidateName(p);
+    const company   = getProp(p, ' Source Company') || '—';
+    const tier      = getProp(p, ' Tier') || '';
+    const stage     = getProp(p, ' Stage') || '';
+    const interview = getProp(p, 'Interview') || '';
+    const tc = tierColor(tier);
+    const tierShort = tier.replace('Tier ', 'T').replace(': ', ' ').split(':')[0]; // "T1 Dream" etc
+    return `<tr onclick="openCandidate('${p.id}')" style="cursor:pointer;border-bottom:1px solid var(--paper2);transition:background .12s;" onmouseover="this.style.background='var(--paper2)'" onmouseout="this.style.background=''">
+      <td style="padding:8px 12px;font-weight:600;white-space:nowrap;color:var(--green);">${name}</td>
+      <td style="padding:8px 12px;color:var(--muted);">${company}</td>
+      <td style="padding:8px 12px;text-align:center;">
+        ${tier ? `<span style="background:${tc}20;color:${tc};padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;">${tierShort}</span>` : '—'}
+      </td>
+      <td style="padding:8px 12px;font-size:11px;color:var(--muted);">${stage}</td>
+      <td style="padding:8px 12px;font-size:11px;color:var(--spirulina);font-weight:${interview ? '600' : '400'};">${interview || '—'}</td>
     </tr>`;
   }).join('');
 }
 
-function filterCandidates(filter) {
-  currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  renderCandidatesTable(window.allPages || []);
+function renderInterviewsFromNotion(pages) {
+  const interviewed = pages.filter(p => getProp(p, 'Interview').trim() !== '');
+  if (!interviewed.length) return; // keep static fallback
+
+  const interviewData = interviewed.map(p => ({
+    name: candidateName(p),
+    phase: getProp(p, 'Interview') || 'Interview',
+    pageId: p.id
+  }));
+
+  const dropped = interviewData.filter(i => i.phase.toLowerCase().includes('drop'));
+  set('int-total', fmt(interviewData.length));
+  set('int-dropped', fmt(dropped.length));
+
+  document.getElementById('interview-list').innerHTML = interviewData.map(({ name, phase, pageId }) => {
+    const phaseColor = phase.toLowerCase().includes('drop') ? 'var(--bubble)' : 'var(--green)';
+    return `<div class="interview-highlight" onclick="openCandidate('${pageId}')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-weight:600;color:var(--green);text-decoration:underline dotted;">${name}</span>
+      <span style="font-size:10px;color:${phaseColor};">${phase}</span>
+    </div>`;
+  }).join('');
 }
 
 // ═══════════════════════════════════════════════════════
-//  CANDIDATE DETAIL PANEL
+//  SLIDE-OUT PANEL
 // ═══════════════════════════════════════════════════════
 function openCandidate(pageId) {
-  const page = (window.allPages || []).find(p => p.id === pageId);
-  if (!page) return;
+  const panel   = document.getElementById('candidate-panel');
+  const overlay = document.getElementById('panel-overlay');
+  const content = document.getElementById('panel-content');
+  content.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--muted);">Loading…</div>';
+  panel.style.transform = 'translateX(0)';
+  overlay.style.display = 'block';
 
-  const first   = getText(page, 'Name') || getText(page, 'First Name');
-  const last    = getText(page, 'Last Name') || getText(page, 'Surname');
-  const name    = [first, last].filter(Boolean).join(' ') || '(unnamed)';
-  const tier    = getText(page, 'Tier');
-  const company = getText(page, 'Source Company');
-  const role    = getText(page, 'Current Role');
-  const stage   = getText(page, 'Stage');
-  const reply   = getText(page, 'Reply');
-  const iv      = getText(page, 'Interview');
-  const linkedin= getText(page, 'LinkedIn URL');
-  const callDate= getPropValue(page, 'Call?');
-  const email   = getText(page, '(Lusha) Work email');
-  const phone1  = getText(page, '(Lusha) Phone number 1');
-  const phone2  = getText(page, '(Lusha) Phone number 2');
-  const notes   = getText(page, 'Notes');
-  const ivNotes = getText(page, 'Interview Notes');
+  // Try from cache first
+  const cached = allCandidates.find(c => c.id === pageId || c.id.replace(/-/g,'') === pageId.replace(/-/g,''));
+  if (cached) { renderPanel(cached); return; }
 
-  // Notion page URL (strip dashes from UUID)
-  const notionId = pageId.replace(/-/g, '');
-  const notionUrl = `https://notion.so/${notionId}`;
+  // Fetch individually
+  fetch(`${workerUrl}/v1/pages/${pageId}`, {
+    headers: { 'Authorization': `Bearer ${notionToken}`, 'Notion-Version': '2022-06-28' }
+  })
+  .then(r => r.json())
+  .then(renderPanel)
+  .catch(() => { content.innerHTML = '<div style="color:var(--bubble);padding:20px;">Could not load candidate.</div>'; });
+}
 
-  // Header
-  document.getElementById('panel-name').textContent = name;
-  document.getElementById('panel-tier').innerHTML = tier ? tierPill(tier) + ` <span style="color:rgba(255,255,255,.55);margin-left:6px;font-size:10px;">${tier}</span>` : '';
+function openStaticPanel(name, info) {
+  const panel   = document.getElementById('candidate-panel');
+  const overlay = document.getElementById('panel-overlay');
+  const content = document.getElementById('panel-content');
+  panel.style.transform = 'translateX(0)';
+  overlay.style.display = 'block';
+  const isDropped = (info.phase || '').toLowerCase().includes('drop');
+  const phaseColor = isDropped ? 'var(--bubble)' : 'var(--green)';
+  content.innerHTML = `
+    <div style="margin-bottom:6px;">
+      <span style="background:var(--paper2);color:var(--muted);padding:3px 9px;border-radius:10px;font-size:10px;font-weight:700;">Headhunter — ${info.headhunter || '?'}</span>
+    </div>
+    <h2 style="font-size:20px;font-weight:900;color:var(--spirulina);margin-bottom:16px;">${name}</h2>
+    <hr style="border:none;border-top:1px solid var(--paper2);margin-bottom:18px;">
+    <div style="margin-bottom:12px;">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px;">Interview Phase</div>
+      <div style="font-size:13px;color:${phaseColor};font-weight:600;">${info.phase || '—'}</div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px;">Source</div>
+      <div style="font-size:13px;color:var(--spirulina);">Headhunter via ${info.headhunter || '?'}</div>
+    </div>
+    <div style="margin-top:20px;padding:12px;background:var(--paper2);border-radius:4px;font-size:11px;color:var(--muted);">
+      ℹ️ This candidate is not yet in Notion — details above are from static data.
+    </div>
+  `;
+}
 
-  // Build body
-  function field(label, value) {
-    if (!value || (typeof value === 'string' && !value.trim())) return '';
-    return `<div class="panel-field">
-      <div class="panel-field-label">${label}</div>
-      <div class="panel-field-value">${value}</div>
-    </div>`;
-  }
-  function link(label, url, text) {
-    if (!url || !url.trim()) return '';
-    return field(label, `<a href="${url}" target="_blank" rel="noopener">${text || url}</a>`);
-  }
+function closePanel() {
+  document.getElementById('candidate-panel').style.transform = 'translateX(100%)';
+  document.getElementById('panel-overlay').style.display = 'none';
+}
 
-  let html = '';
+function renderPanel(page) {
+  const content = document.getElementById('panel-content');
+  const first     = getProp(page, 'Name');
+  const last      = getProp(page, ' Last Name');
+  const name      = [first, last].filter(Boolean).join(' ') || '—';
+  const company   = getProp(page, ' Source Company') || '—';
+  const tier      = getProp(page, ' Tier') || '';
+  const stage     = getProp(page, ' Stage') || '';
+  const interview = getProp(page, 'Interview') || '';
+  const intNotes  = getProp(page, 'Interview Notes') || '';
+  const notes     = getProp(page, ' Notes') || '';
+  const role      = getProp(page, ' Current Role') || '';
+  const linkedin  = getProp(page, ' LinkedIn URL') || '';
+  const email     = getProp(page, ' Email') || '';
+  const phone     = getProp(page, '(Lusha) Phone number 1') || '';
+  const source    = getProp(page, ' Source Channel') || '';
+  const decision  = getProp(page, ' In Out Decision') || '';
+  const tc = tierColor(tier);
+  const tierShort = tier.replace('Tier ', 'T').replace(': ', ' ').split(':')[0];
 
-  // Contact info
-  html += `<div class="panel-section">
-    <div class="panel-section-title">👤 Candidate Info</div>
-    ${field('Company', company)}
-    ${field('Role', role)}
+  const field = (label, val) => val ? `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px;">${label}</div>
+      <div style="font-size:13px;color:var(--spirulina);">${val}</div>
+    </div>` : '';
+
+  content.innerHTML = `
+    <div style="margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap;">
+      ${tier ? `<span style="background:${tc}25;color:${tc};padding:3px 9px;border-radius:10px;font-size:10px;font-weight:700;">${tierShort}</span>` : ''}
+      ${decision ? `<span style="background:${decision==='In'?'#00712D22':'#E26A9E22'};color:${decision==='In'?'var(--green)':'var(--bubble)'};padding:3px 9px;border-radius:10px;font-size:10px;font-weight:700;">${decision}</span>` : ''}
+    </div>
+    <h2 style="font-size:20px;font-weight:900;color:var(--spirulina);margin-bottom:4px;">${name}</h2>
+    ${role ? `<div style="font-size:13px;color:var(--muted);margin-bottom:2px;">${role}</div>` : ''}
+    ${company ? `<div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:20px;">@ ${company}</div>` : ''}
+    <hr style="border:none;border-top:1px solid var(--paper2);margin-bottom:18px;">
     ${field('Stage', stage)}
-    ${field('Reply', reply)}
-    ${field('Interview', iv)}
-    ${field('Call Date', callDate)}
-    ${link('LinkedIn', linkedin, '↗ View LinkedIn')}
-    ${link('Notion Page', notionUrl, '↗ Open in Notion')}
-  </div>`;
-
-  // Contact details
-  if (email || phone1 || phone2) {
-    html += `<div class="panel-section">
-      <div class="panel-section-title">📬 Contact Details</div>
-      ${email  ? field('Email', `<a href="mailto:${email}">${email}</a>`) : ''}
-      ${phone1 ? field('Phone 1', phone1) : ''}
-      ${phone2 ? field('Phone 2', phone2) : ''}
-    </div>`;
-  }
-
-  // Notes
-  if (notes && notes.trim()) {
-    html += `<div class="panel-section">
-      <div class="panel-section-title">📝 Notes</div>
-      <div class="panel-notes">${notes}</div>
-    </div>`;
-  }
-
-  // Interview notes
-  if (ivNotes && ivNotes.trim()) {
-    html += `<div class="panel-section">
-      <div class="panel-section-title">🎙️ Interview Notes</div>
-      <div class="panel-notes">${ivNotes}</div>
-    </div>`;
-  }
-
-  // Quick links at bottom
-  html += `<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
-    ${linkedin ? `<a href="${linkedin}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;background:var(--spirulina);color:var(--accent);font-size:11px;font-weight:700;padding:8px 14px;border-radius:2px;text-decoration:none;">↗ LinkedIn</a>` : ''}
-    <a href="${notionUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;background:var(--paper2);color:var(--spirulina);font-size:11px;font-weight:700;padding:8px 14px;border-radius:2px;text-decoration:none;">📋 Notion</a>
-  </div>`;
-
-  document.getElementById('panel-body').innerHTML = html;
-
-  // Show panel
-  document.getElementById('candidate-overlay').style.display = 'block';
-  const panel = document.getElementById('candidate-panel');
-  panel.style.display = 'block';
-  requestAnimationFrame(() => { panel.style.transform = 'translateX(0)'; });
+    ${field('Source', source)}
+    ${interview ? field('Interview', `<span style="color:${interview.toLowerCase().includes('drop')?'var(--bubble)':'var(--green)'};font-weight:600">${interview}</span>`) : ''}
+    ${intNotes ? field('Interview Notes', intNotes) : ''}
+    ${notes ? field('Notes', `<div style="background:var(--paper2);border-radius:3px;padding:8px 10px;font-size:11px;line-height:1.5;white-space:pre-wrap;">${notes}</div>`) : ''}
+    ${email ? field('Email', `<a href="mailto:${email}" style="color:var(--green);">${email}</a>`) : ''}
+    ${phone ? field('Phone', phone) : ''}
+    ${linkedin ? `<div style="margin-top:16px;"><a href="${linkedin}" target="_blank" style="font-size:12px;color:var(--green);font-weight:600;">🔗 Open LinkedIn</a></div>` : ''}
+  `;
 }
 
-function closePanelBtn() {
-  const panel = document.getElementById('candidate-panel');
-  panel.style.transform = 'translateX(100%)';
-  setTimeout(() => {
-    panel.style.display = 'none';
-    document.getElementById('candidate-overlay').style.display = 'none';
-  }, 260);
-}
+// ═══════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  switchWeek(3);
+  initNotion();
+});
 
-function closePanel(e) {
-  if (e.target === document.getElementById('candidate-overlay')) closePanelBtn();
-}
+
 </script>
 </body>
 </html>
