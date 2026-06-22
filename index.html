@@ -991,7 +991,9 @@ function renderSourceChart(d) {
 //    Call?               — date field   → call was booked/happened
 
 function getMultiSelectValues(page, key) {
-  const p = page.properties?.[key];
+  // Try exact key first, then en-dash variant (Notion sometimes uses –)
+  const p = page.properties?.[key]
+         || page.properties?.[key.replace(/-/g, '–')];
   if (!p || p.type !== 'multi_select') return [];
   return (p.multi_select || []).map(s => s.name);
 }
@@ -1013,29 +1015,36 @@ function computeKPIsFromNotion(pages) {
     else if (tier.includes('3') || tier.toLowerCase().includes('high'))   t3++;
   });
 
-  // Outreach sent: Email Sent (1st) checkbox is checked
+  // Outreach sent: Email Sent (1st) checkbox
   const outreach = pages.filter(p => getProp(p, 'Email Sent (1st)') === '✓').length;
 
-  // LinkedIn connections accepted
-  const connAccepted = pages.filter(p => getProp(p, 'Connection Accepted') === '✓').length;
+  // LinkedIn connections accepted — space-prefixed in Notion
+  const connAccepted = pages.filter(p => getProp(p, ' Connection Accepted') === '✓').length;
 
-  // Replied: any channel has a "No (...)" value — means they responded and exited the sequence
+  // Replied: "No (...)" value in either follow-up field, OR Reply checkbox
   function hasReplied(p) {
-    return [
+    const msVals = [
       ...getMultiSelectValues(p, 'Follow-Up Linkedin'),
+      ...getMultiSelectValues(p, 'Follow–Up Linkedin'),
       ...getMultiSelectValues(p, 'Email Follow-Up'),
-    ].some(v => v.startsWith('No ('));
+      ...getMultiSelectValues(p, 'Email Follow–Up'),
+    ];
+    const hasNoValue = msVals.some(v => v.startsWith('No ('));
+    const replyChecked = getProp(p, 'Reply') === '✓';
+    return hasNoValue || replyChecked;
   }
   const replied = pages.filter(hasReplied).length;
 
-  // Not interested specifically: "No (answered & removed)"
+  // Not interested: "No (answered & removed)" in either follow-up field
   const notInterested = pages.filter(p => [
     ...getMultiSelectValues(p, 'Follow-Up Linkedin'),
+    ...getMultiSelectValues(p, 'Follow–Up Linkedin'),
     ...getMultiSelectValues(p, 'Email Follow-Up'),
+    ...getMultiSelectValues(p, 'Email Follow–Up'),
   ].includes('No (answered & removed)')).length;
 
-  // Calls: Call? date field has a value
-  const called = pages.filter(p => hasDateValue(p, 'Call?')).length;
+  // Calls: ' Call?' date field (space-prefixed in Notion)
+  const called = pages.filter(p => hasDateValue(p, ' Call?')).length;
 
   // Not yet contacted
   const notStarted = total - outreach;
