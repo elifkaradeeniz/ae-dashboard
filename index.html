@@ -1060,14 +1060,12 @@ function computeKPIsFromNotion(pages) {
   const notStarted = total - outreach;
 
   // Source channel breakdown for chart — normalize Lemlist/Notion variants
-  const SOURCE_NORMALIZE = {
-    'Sales Nav Search': 'LinkedIn Sales Navigator',
-  };
   const sourceCounts = {};
   pages.forEach(p => {
     let src = getProp(p, ' Source Channel');
     if (!src) return;
-    src = SOURCE_NORMALIZE[src] || src;
+    // Anything that isn't explicitly "Headhunter" is LinkedIn Sales Navigator
+    if (src !== 'Headhunter') src = 'LinkedIn Sales Navigator';
     sourceCounts[src] = (sourceCounts[src] || 0) + 1;
   });
 
