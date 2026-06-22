@@ -1040,11 +1040,17 @@ function computeKPIsFromNotion(pages) {
   // Not yet contacted
   const notStarted = total - outreach;
 
-  // Source channel breakdown for chart
+  // Source channel breakdown for chart — normalize Lemlist/Notion variants
+  const SOURCE_NORMALIZE = {
+    'Sales Nav Search':        'LinkedIn Sales Navigator',
+    'Company Search':          'Headhunter',
+  };
   const sourceCounts = {};
   pages.forEach(p => {
-    const src = getProp(p, ' Source Channel');
-    if (src) sourceCounts[src] = (sourceCounts[src] || 0) + 1;
+    let src = getProp(p, ' Source Channel');
+    if (!src) return;
+    src = SOURCE_NORMALIZE[src] || src;
+    sourceCounts[src] = (sourceCounts[src] || 0) + 1;
   });
 
   // Lusha contact info
@@ -1140,6 +1146,10 @@ async function fetchAllCandidatesForRole(dbId) {
       if (statusEl) statusEl.textContent = `${results.length} loaded…`;
     }
     allCandidates = results;
+    // Debug: log actual property names from first result so we can verify field name mapping
+    if (results.length > 0) {
+      console.log('[AE-OS] Notion property names:', Object.keys(results[0].properties));
+    }
     // Compute all KPIs live from Notion and re-render the full dashboard
     const liveData = computeKPIsFromNotion(results);
     renderDashboard(liveData);
