@@ -1015,6 +1015,16 @@ function computeKPIsFromNotion(pages) {
     else if (tier.includes('3') || tier.toLowerCase().includes('high'))   t3++;
   });
 
+  // Debug: inspect Email Sent (1st) and Follow-Up fields on first candidate
+  if (pages.length > 0) {
+    const fp = pages[0].properties;
+    console.log('[AE-OS] Email Sent (1st):', JSON.stringify(fp['Email Sent (1st)']));
+    console.log('[AE-OS] Follow-Up Linkedin:', JSON.stringify(fp['Follow-Up Linkedin'] || fp['Follow–Up Linkedin']));
+    console.log('[AE-OS] Email Follow-Up:', JSON.stringify(fp['Email Follow-Up'] || fp['Email Follow–Up']));
+    console.log('[AE-OS] Reply:', JSON.stringify(fp['Reply']));
+    console.log('[AE-OS] Lemlist Update:', JSON.stringify(fp['Lemlist Update']));
+  }
+
   // Outreach sent: Email Sent (1st) checkbox
   const outreach = pages.filter(p => getProp(p, 'Email Sent (1st)') === '✓').length;
 
